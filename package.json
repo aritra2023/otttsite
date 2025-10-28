@@ -108,8 +108,4 @@
   }
 }
 
-"homepage": "https://github.com/aritra2023/otttsite",
-   "scripts": {
-     "predeploy": "npm run build",
-     "deploy": "gh-pages -d build"
-   }
+
