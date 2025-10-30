@@ -39,6 +39,10 @@ export default function SubscriptionCard({
   const { addToCart } = useCart();
   const { toast } = useToast();
 
+  if (!selectedPlan || plans.length === 0) {
+    return null;
+  }
+
   const handleBuyNow = () => {
     if (modalSelectedPlanIndex < 0 || !plans[modalSelectedPlanIndex]?.inStock) {
       toast({
