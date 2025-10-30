@@ -39,11 +39,17 @@ export default function SubscriptionCard({
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  if (!selectedPlan || plans.length === 0) {
-    return null;
-  }
+  const noPlansAvailable = !selectedPlan || plans.length === 0;
 
   const handleBuyNow = () => {
+    if (noPlansAvailable) {
+      toast({
+        title: "No variants available",
+        description: "This product currently has no pricing options.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (modalSelectedPlanIndex < 0 || !plans[modalSelectedPlanIndex]?.inStock) {
       toast({
         title: "Product unavailable",
@@ -61,6 +67,14 @@ export default function SubscriptionCard({
   };
 
   const handleAddToCart = () => {
+    if (noPlansAvailable) {
+      toast({
+        title: "No variants available",
+        description: "This product currently has no pricing options.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsModalOpen(true);
   };
 
@@ -89,7 +103,7 @@ export default function SubscriptionCard({
     setIsModalOpen(false);
   };
 
-  const savings = Math.round(((selectedPlan.originalPrice - selectedPlan.discountedPrice) / selectedPlan.originalPrice) * 100);
+  const savings = noPlansAvailable ? 0 : Math.round(((selectedPlan.originalPrice - selectedPlan.discountedPrice) / selectedPlan.originalPrice) * 100);
 
   return (
     <>
@@ -106,7 +120,9 @@ export default function SubscriptionCard({
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className="text-lg font-bold mb-2" data-testid={`text-platform-${platform.toLowerCase().replace(/\s+/g, '-')}`}>{platform}</h3>
-              <p className="text-xs text-muted-foreground">{selectedPlan.duration}</p>
+              <p className="text-xs text-muted-foreground">
+                {noPlansAvailable ? "No variants available" : selectedPlan.duration}
+              </p>
             </div>
             <div className="w-12 h-12 flex items-center justify-center">
               <img src={logo} alt={platform} className="w-full h-full object-contain rounded-lg" />
@@ -115,8 +131,12 @@ export default function SubscriptionCard({
 
           <div className="space-y-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-foreground" data-testid={`text-price-${platform.toLowerCase().replace(/\s+/g, '-')}`}>₹{selectedPlan.discountedPrice}</span>
-              <span className="text-xs text-muted-foreground line-through">₹{selectedPlan.originalPrice}</span>
+              <span className="text-3xl font-black text-foreground" data-testid={`text-price-${platform.toLowerCase().replace(/\s+/g, '-')}`}>
+                {noPlansAvailable ? "₹0" : `₹${selectedPlan.discountedPrice}`}
+              </span>
+              {!noPlansAvailable && (
+                <span className="text-xs text-muted-foreground line-through">₹{selectedPlan.originalPrice}</span>
+              )}
             </div>
             <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-orange-500 hover:bg-orange-600 text-white border-0 w-fit">Save {savings}%</Badge>
           </div>
