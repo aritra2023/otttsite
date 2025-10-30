@@ -43,7 +43,7 @@ export function initTelegramBot(token: string) {
     const chatId = msg.chat.id;
     bot.sendMessage(
       chatId,
-      "Welcome to SubFlix Product Manager! 🎬\n\nCommands:\n/newpost - Add a new product\n/showall - View all products with numbers\n/delpost - Delete a product\n/changeimg - Change product image\n/changedescription - Change product description"
+      "Welcome to SubFlix Product Manager! 🎬\n\nCommands:\n/newpost - Add a new product\n/showall - View all products with numbers\n/delpost - Delete a product\n/changeimg - Change product image\n/changedescription - Change product description\n/addoptions - Add options to existing product\n/deloptions - Delete options from product"
     );
   });
 
@@ -191,6 +191,66 @@ export function initTelegramBot(token: string) {
     }
   });
 
+  bot.onText(/\/addoptions/, async (msg) => {
+    const chatId = msg.chat.id;
+    
+    try {
+      const products = await storage.getProducts();
+      
+      if (products.length === 0) {
+        bot.sendMessage(chatId, "No products found. Use /newpost to add a product.");
+        return;
+      }
+
+      const keyboard = {
+        reply_markup: {
+          inline_keyboard: products.map(product => [{
+            text: `➕ ${product.name} (${product.category})`,
+            callback_data: `addopt_${product.id}`
+          }])
+        }
+      };
+
+      bot.sendMessage(
+        chatId,
+        "Select a product to add custom options:",
+        keyboard
+      );
+    } catch (error) {
+      bot.sendMessage(chatId, "❌ Error fetching products.");
+    }
+  });
+
+  bot.onText(/\/deloptions/, async (msg) => {
+    const chatId = msg.chat.id;
+    
+    try {
+      const products = await storage.getProducts();
+      
+      if (products.length === 0) {
+        bot.sendMessage(chatId, "No products found. Use /newpost to add a product.");
+        return;
+      }
+
+      const keyboard = {
+        reply_markup: {
+          inline_keyboard: products.map(product => [{
+            text: `🗑️ ${product.name} (${product.category})`,
+            callback_data: `delopt_${product.id}`
+          }])
+        }
+      };
+
+      bot.sendMessage(
+        chatId,
+        "Select a product to delete options:",
+        keyboard
+      );
+    } catch (error) {
+      bot.sendMessage(chatId, "❌ Error fetching products.");
+    }
+  });
+
 
   bot.on("callback_query", async (query) => {
     const chatId = query.message!.chat.id;
@@ -228,7 +288,7 @@ export function initTelegramBot(token: string) {
       await bot.answerCallbackQuery(query.id);
       bot.sendMessage(
         chatId,
-        "Please enter pricing in format:\nduration_actualPrice_sellingPrice\n\nExample: 1 Month_649_149\nExample: 3 Months (Netflix)_699_99\nExample: 6 Months_2599_149\n\n✨ You can add custom text in brackets!"
+        "Please enter pricing in format:\nlabel/actualPrice/sellingPrice\n\nExample: Premium HD/649/149\nExample: Family Plan/999/299\nExample: 1 Month Special/599/99\n\n✨ You can write any custom text as label!"
       );
       return;
     }
@@ -656,6 +716,114 @@ Product ID: ${product.id}
       return;
     }
 
+    if (data.startsWith("addopt_")) {
+      const productId = data.replace("addopt_", "");
+      const product = await storage.getProduct(productId);
+      
+      if (!product) {
+        await bot.answerCallbackQuery(query.id, { text: "Product not found" });
+        return;
+      }
+
+      sessions.set(chatId, {
+        step: "adding_option_to_product",
+        data: {},
+        editingProductId: productId
+      });
+
+      const currentOptions = product.customOptions || [];
+      const optionsList = currentOptions.length > 0 
+        ? currentOptions.map(opt => `• ${opt.label}: ₹${opt.actualPrice} → ₹${opt.sellingPrice}`).join('\n')
+        : 'No custom options yet';
+
+      await bot.editMessageText(
+        `➕ Add option to: ${product.name}\n\nCurrent options:\n${optionsList}\n\nPlease enter new option in format:\nlabel/actualPrice/sellingPrice\n\nExample: Premium HD/649/149`,
+        {
+          chat_id: chatId,
+          message_id: messageId
+        }
+      );
+      
+      await bot.answerCallbackQuery(query.id);
+      return;
+    }
+
+    if (data.startsWith("delopt_")) {
+      const productId = data.replace("delopt_", "");
+      const product = await storage.getProduct(productId);
+      
+      if (!product) {
+        await bot.answerCallbackQuery(query.id, { text: "Product not found" });
+        return;
+      }
+
+      const customOptions = product.customOptions || [];
+      
+      if (customOptions.length === 0) {
+        await bot.editMessageText(
+          `❌ No custom options found for: ${product.name}\n\nUse /addoptions to add options first.`,
+          {
+            chat_id: chatId,
+            message_id: messageId
+          }
+        );
+        await bot.answerCallbackQuery(query.id);
+        return;
+      }
+
+      const keyboard = {
+        reply_markup: {
+          inline_keyboard: customOptions.map(option => [{
+            text: `🗑️ ${option.label} (₹${option.actualPrice} → ₹${option.sellingPrice})`,
+            callback_data: `deloptconfirm_${productId}_${option.id}`
+          }])
+        }
+      };
+
+      await bot.editMessageText(
+        `🗑️ Delete option from: ${product.name}\n\nSelect an option to delete:`,
+        {
+          chat_id: chatId,
+          message_id: messageId,
+          reply_markup: keyboard.reply_markup
+        }
+      );
+      
+      await bot.answerCallbackQuery(query.id);
+      return;
+    }
+
+    if (data.startsWith("deloptconfirm_")) {
+      const parts = data.replace("deloptconfirm_", "").split("_");
+      const productId = parts[0];
+      const optionId = parts[1];
+      
+      const product = await storage.getProduct(productId);
+      
+      if (!product) {
+        await bot.answerCallbackQuery(query.id, { text: "Product not found" });
+        return;
+      }
+
+      const customOptions = product.customOptions || [];
+      const optionToDelete = customOptions.find(opt => opt.id === optionId);
+      const updatedOptions = customOptions.filter(opt => opt.id !== optionId);
+
+      await storage.updateProduct(productId, {
+        customOptions: updatedOptions
+      });
+
+      await bot.editMessageText(
+        `✅ Option deleted successfully!\n\nDeleted: ${optionToDelete?.label || 'Option'}\n\nUse /showall to view the product.`,
+        {
+          chat_id: chatId,
+          message_id: messageId
+        }
+      );
+      
+      await bot.answerCallbackQuery(query.id, { text: "Option deleted!" });
+      return;
+    }
 
     if (data === "noop") {
       await bot.answerCallbackQuery(query.id);
@@ -710,48 +878,41 @@ Product ID: ${product.id}
         break;
 
       case "add_pricing": {
-        const parts = text.split("_");
+        const parts = text.split("/");
         
         if (parts.length !== 3) {
           bot.sendMessage(
             chatId,
-            "❌ Invalid format. Please use format:\nduration_actualPrice_sellingPrice\n\nExample: 1 Month_649_149\nExample: 3 Months (Netflix)_699_99"
+            "❌ Invalid format. Please use format:\nlabel/actualPrice/sellingPrice\n\nExample: Premium HD/649/149\nExample: Family Plan/999/299"
           );
           return;
         }
 
-        const durationText = parts[0].trim();
-        const actualPrice = Number(parts[1]);
-        const sellingPrice = Number(parts[2]);
+        const labelText = parts[0].trim();
+        const actualPrice = Number(parts[1].trim());
+        const sellingPrice = Number(parts[2].trim());
 
         if (isNaN(actualPrice) || isNaN(sellingPrice)) {
           bot.sendMessage(
             chatId,
-            "❌ Invalid prices. Please enter valid numbers.\n\nExample: 1 Month_649_149\nExample: 3 Months (Netflix)_699_99"
+            "❌ Invalid prices. Please enter valid numbers.\n\nExample: Premium HD/649/149"
           );
           return;
         }
 
-        const durationLower = durationText.toLowerCase();
-        if (durationLower.includes("1") && durationLower.includes("month") && !durationLower.includes("12")) {
-          session.data.price1MonthActual = actualPrice;
-          session.data.price1MonthSelling = sellingPrice;
-        } else if (durationLower.includes("3") && durationLower.includes("month")) {
-          session.data.price3MonthActual = actualPrice;
-          session.data.price3MonthSelling = sellingPrice;
-        } else if (durationLower.includes("6") && durationLower.includes("month")) {
-          session.data.price6MonthActual = actualPrice;
-          session.data.price6MonthSelling = sellingPrice;
-        } else if (durationLower.includes("12") && durationLower.includes("month")) {
-          session.data.price12MonthActual = actualPrice;
-          session.data.price12MonthSelling = sellingPrice;
-        } else {
-          bot.sendMessage(
-            chatId,
-            "⚠️ Unrecognized duration. Please use: 1 Month, 3 Months, 6 Months, or 12 Months"
-          );
-          return;
+        if (!session.data.customOptions) {
+          session.data.customOptions = [];
         }
+
+        const newOption = {
+          id: Date.now().toString(),
+          label: labelText,
+          actualPrice: actualPrice,
+          sellingPrice: sellingPrice,
+          inStock: true
+        };
+
+        (session.data.customOptions as any[]).push(newOption);
 
         session.step = "pricing";
         
@@ -766,9 +927,64 @@ Product ID: ${product.id}
         
         bot.sendMessage(
           chatId,
-          `✅ Pricing added for ${durationText}!\n\nAdd more pricing options or click Done to create the product:`,
+          `✅ Option added: ${labelText}!\n\nAdd more pricing options or click Done to create the product:`,
           continueKeyboard
         );
+        break;
+      }
+
+      case "adding_option_to_product": {
+        const parts = text.split("/");
+        
+        if (parts.length !== 3) {
+          bot.sendMessage(
+            chatId,
+            "❌ Invalid format. Please use format:\nlabel/actualPrice/sellingPrice\n\nExample: Premium HD/649/149"
+          );
+          return;
+        }
+
+        const labelText = parts[0].trim();
+        const actualPrice = Number(parts[1].trim());
+        const sellingPrice = Number(parts[2].trim());
+
+        if (isNaN(actualPrice) || isNaN(sellingPrice)) {
+          bot.sendMessage(
+            chatId,
+            "❌ Invalid prices. Please enter valid numbers.\n\nExample: Premium HD/649/149"
+          );
+          return;
+        }
+
+        const productId = session.editingProductId;
+        if (!productId) return;
+
+        const product = await storage.getProduct(productId);
+        if (!product) {
+          bot.sendMessage(chatId, "❌ Product not found.");
+          sessions.delete(chatId);
+          return;
+        }
+
+        const existingOptions = product.customOptions || [];
+        const newOption = {
+          id: Date.now().toString(),
+          label: labelText,
+          actualPrice: actualPrice,
+          sellingPrice: sellingPrice,
+          inStock: true
+        };
+
+        await storage.updateProduct(productId, {
+          customOptions: [...existingOptions, newOption]
+        });
+
+        bot.sendMessage(
+          chatId,
+          `✅ Option added successfully!\n\n${labelText}: ₹${actualPrice} → ₹${sellingPrice}\n\nUse /showall to view the product.`
+        );
+        
+        sessions.delete(chatId);
         break;
       }
 
