@@ -7,6 +7,7 @@ interface UserSession {
   data: Partial<InsertProduct>;
   editingProductId?: string;
   currentDuration?: string;
+  editingOptionId?: string;
 }
 
 const sessions = new Map<number, UserSession>();
@@ -372,6 +373,24 @@ export function initTelegramBot(token: string) {
         ]);
       }
 
+      const customOptions = product.customOptions || [];
+      for (const option of customOptions) {
+        priceOptions.push([
+          {
+            text: `${option.label}: ₹${option.actualPrice} → ₹${option.sellingPrice}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_custom_${option.id}_${productId}`
+          },
+          {
+            text: option.inStock ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_custom_${option.id}_${productId}`
+          }
+        ]);
+      }
+
       await bot.editMessageText(
         `📦 ${product.name}\n\nCategory: ${product.category}\nDescription: ${product.description}\n\nClick ✏️ to edit price or stock icon to toggle availability:`,
         {
@@ -507,6 +526,24 @@ export function initTelegramBot(token: string) {
         ]);
       }
 
+      const customOptions = updatedProduct.customOptions || [];
+      for (const option of customOptions) {
+        priceOptions.push([
+          {
+            text: `${option.label}: ₹${option.actualPrice} → ₹${option.sellingPrice}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_custom_${option.id}_${productId}`
+          },
+          {
+            text: option.inStock ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_custom_${option.id}_${productId}`
+          }
+        ]);
+      }
+
       await bot.editMessageReplyMarkup(
         {
           inline_keyboard: priceOptions
@@ -520,6 +557,171 @@ export function initTelegramBot(token: string) {
       await bot.answerCallbackQuery(query.id, { 
         text: `Stock status updated!` 
       });
+      return;
+    }
+
+    if (data.startsWith("toggle_custom_")) {
+      const parts = data.replace("toggle_custom_", "").split("_");
+      const productId = parts.pop()!;
+      const optionId = parts.join("_");
+      
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        await bot.answerCallbackQuery(query.id, { text: "Product not found" });
+        return;
+      }
+
+      const customOptions = product.customOptions || [];
+      const updatedCustomOptions = customOptions.map(option => {
+        if (option.id === optionId) {
+          return { ...option, inStock: !option.inStock };
+        }
+        return option;
+      });
+
+      await storage.updateProduct(productId, { customOptions: updatedCustomOptions });
+      
+      const updatedProduct = await storage.getProduct(productId);
+      if (!updatedProduct) {
+        await bot.answerCallbackQuery(query.id, { text: "Error updating" });
+        return;
+      }
+
+      const priceOptions = [];
+      
+      if (updatedProduct.price1MonthActual > 0 && updatedProduct.price1MonthSelling > 0) {
+        priceOptions.push([
+          {
+            text: `1 Month: ₹${updatedProduct.price1MonthActual} → ₹${updatedProduct.price1MonthSelling}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_1_month_${productId}`
+          },
+          {
+            text: updatedProduct.inStock1Month ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_1_month_${productId}`
+          }
+        ]);
+      }
+      
+      if (updatedProduct.price3MonthActual > 0 && updatedProduct.price3MonthSelling > 0) {
+        priceOptions.push([
+          {
+            text: `3 Months: ₹${updatedProduct.price3MonthActual} → ₹${updatedProduct.price3MonthSelling}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_3_months_${productId}`
+          },
+          {
+            text: updatedProduct.inStock3Month ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_3_months_${productId}`
+          }
+        ]);
+      }
+      
+      if (updatedProduct.price6MonthActual > 0 && updatedProduct.price6MonthSelling > 0) {
+        priceOptions.push([
+          {
+            text: `6 Months: ₹${updatedProduct.price6MonthActual} → ₹${updatedProduct.price6MonthSelling}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_6_months_${productId}`
+          },
+          {
+            text: updatedProduct.inStock6Month ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_6_months_${productId}`
+          }
+        ]);
+      }
+      
+      if (updatedProduct.price12MonthActual > 0 && updatedProduct.price12MonthSelling > 0) {
+        priceOptions.push([
+          {
+            text: `12 Months: ₹${updatedProduct.price12MonthActual} → ₹${updatedProduct.price12MonthSelling}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_12_months_${productId}`
+          },
+          {
+            text: updatedProduct.inStock12Month ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_12_months_${productId}`
+          }
+        ]);
+      }
+
+      const updatedCustomOptions2 = updatedProduct.customOptions || [];
+      for (const option of updatedCustomOptions2) {
+        priceOptions.push([
+          {
+            text: `${option.label}: ₹${option.actualPrice} → ₹${option.sellingPrice}`,
+            callback_data: `noop`
+          },
+          {
+            text: "✏️",
+            callback_data: `edit_custom_${option.id}_${productId}`
+          },
+          {
+            text: option.inStock ? "✅" : "🙅🏻‍♂️",
+            callback_data: `toggle_custom_${option.id}_${productId}`
+          }
+        ]);
+      }
+
+      await bot.editMessageReplyMarkup(
+        {
+          inline_keyboard: priceOptions
+        },
+        {
+          chat_id: chatId,
+          message_id: messageId
+        }
+      );
+      
+      await bot.answerCallbackQuery(query.id, { 
+        text: `Stock status updated!` 
+      });
+      return;
+    }
+
+    if (data.startsWith("edit_custom_")) {
+      const parts = data.replace("edit_custom_", "").split("_");
+      const productId = parts.pop()!;
+      const optionId = parts.join("_");
+      
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        await bot.answerCallbackQuery(query.id, { text: "Product not found" });
+        return;
+      }
+
+      const customOptions = product.customOptions || [];
+      const option = customOptions.find(opt => opt.id === optionId);
+      
+      if (!option) {
+        await bot.answerCallbackQuery(query.id, { text: "Option not found" });
+        return;
+      }
+
+      sessions.set(chatId, {
+        step: `editing_custom_option`,
+        data: {},
+        editingProductId: productId,
+        editingOptionId: optionId
+      });
+      
+      await bot.answerCallbackQuery(query.id);
+      bot.sendMessage(
+        chatId,
+        `Enter new pricing for "${option.label}" in format:\nactualPrice/sellingPrice\n\nExample: 649/149`
+      );
       return;
     }
 
@@ -1012,6 +1214,61 @@ Product ID: ${product.id}
         bot.sendMessage(
           chatId,
           `✅ Description updated successfully!\n\nNew description: ${text}\n\nUse /showall to view the product.`
+        );
+        
+        sessions.delete(chatId);
+        break;
+      }
+
+      case "editing_custom_option": {
+        const productId = session.editingProductId;
+        const optionId = session.editingOptionId;
+        
+        if (!productId || !optionId) return;
+
+        const parts = text.split("/");
+        
+        if (parts.length !== 2) {
+          bot.sendMessage(
+            chatId,
+            "❌ Invalid format. Please use format:\nactualPrice/sellingPrice\n\nExample: 649/149"
+          );
+          return;
+        }
+
+        const actualPrice = Number(parts[0].trim());
+        const sellingPrice = Number(parts[1].trim());
+
+        if (isNaN(actualPrice) || isNaN(sellingPrice)) {
+          bot.sendMessage(
+            chatId,
+            "❌ Invalid prices. Please enter valid numbers.\n\nExample: 649/149"
+          );
+          return;
+        }
+
+        const product = await storage.getProduct(productId);
+        if (!product) {
+          bot.sendMessage(chatId, "❌ Product not found.");
+          sessions.delete(chatId);
+          return;
+        }
+
+        const customOptions = product.customOptions || [];
+        const updatedCustomOptions = customOptions.map(option => {
+          if (option.id === optionId) {
+            return { ...option, actualPrice, sellingPrice };
+          }
+          return option;
+        });
+
+        await storage.updateProduct(productId, { customOptions: updatedCustomOptions });
+        
+        const updatedOption = updatedCustomOptions.find(opt => opt.id === optionId);
+        
+        bot.sendMessage(
+          chatId,
+          `✅ Pricing updated successfully for "${updatedOption?.label}"!\n\n₹${actualPrice} → ₹${sellingPrice}\n\nUse /showall to view the product.`
         );
         
         sessions.delete(chatId);
