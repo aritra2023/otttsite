@@ -13,6 +13,10 @@ export default function ComboPackSection({ searchQuery = "" }: ComboPackSectionP
 
   const comboProducts = products.filter(product => product.category === "Combo Pack");
 
+  if (searchQuery && searchQuery.toLowerCase() !== "combo pack") {
+    return null;
+  }
+
   const filteredProducts = searchQuery 
     ? comboProducts.filter(product => 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

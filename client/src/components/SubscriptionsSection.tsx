@@ -11,12 +11,14 @@ export default function SubscriptionsSection({ searchQuery = "" }: Subscriptions
     queryKey: ["/api/products"],
   });
 
+  const nonComboProducts = products.filter(product => product.category !== "Combo Pack");
+
   const filteredProducts = searchQuery 
-    ? products.filter(product => 
+    ? nonComboProducts.filter(product => 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.category.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : products;
+    : nonComboProducts;
 
   const transformedProducts = filteredProducts.map(product => {
     const fixedPlans = [
