@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import Home from "@/pages/Home";
 import Cart from "@/pages/Cart";
 import FAQPage from "@/pages/FAQPage";
+import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/cart" component={Cart} />
       <Route path="/faq" component={FAQPage} />
+      <Route path="/terms" component={TermsPage} />
       <Route component={NotFound} />
     </Switch>
   );

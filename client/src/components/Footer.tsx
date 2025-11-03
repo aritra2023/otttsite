@@ -1,7 +1,10 @@
 import { SiWhatsapp, SiInstagram, SiFacebook } from "react-icons/si";
 import { Mail, Phone, MapPin, Clock, ShieldCheck } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Footer() {
+  const [, setLocation] = useLocation();
+  
   const handleWhatsApp = () => {
     const message = encodeURIComponent("Hi, I want to know more about your OTT subscriptions.");
     window.open(`https://wa.me/919433419022?text=${message}`, "_blank");
@@ -98,13 +101,13 @@ export default function Footer() {
               © {currentYear} <span className="text-primary font-semibold">SubFlix</span>. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm text-slate-400">
-              <a href="#" className="hover:text-primary transition-colors" data-testid="link-privacy">
+              <button onClick={() => setLocation("/terms")} className="hover:text-primary transition-colors" data-testid="link-privacy">
                 Privacy Policy
-              </a>
+              </button>
               <span className="text-slate-600">|</span>
-              <a href="#" className="hover:text-primary transition-colors" data-testid="link-refund">
-                Refund Policy
-              </a>
+              <button onClick={() => setLocation("/terms")} className="hover:text-primary transition-colors" data-testid="link-refund">
+                Terms & Conditions
+              </button>
             </div>
           </div>
         </div>

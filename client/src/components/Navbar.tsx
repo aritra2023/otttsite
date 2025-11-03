@@ -226,18 +226,14 @@ export default function Navbar({ onSearch }: NavbarProps) {
                 {privacyOpen && (
                   <div className="pl-4 space-y-1">
                     <button
+                      onClick={() => {
+                        setLocation("/terms");
+                        setMobileMenuOpen(false);
+                      }}
                       className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50"
                       data-testid="link-terms-mobile"
-                      onClick={() => setMobileMenuOpen(false)}
                     >
                       Terms and Conditions
-                    </button>
-                    <button
-                      className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50"
-                      data-testid="link-store-policies-mobile"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Store Policies
                     </button>
                     <button
                       onClick={() => {
