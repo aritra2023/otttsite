@@ -18,8 +18,8 @@ export default function Home() {
       <Navbar onSearch={setSearchQuery} />
       <HeroCarousel />
       <Categories onCategoryClick={setSearchQuery} />
-      <ComboPackSection searchQuery={searchQuery} />
       <SubscriptionsSection searchQuery={searchQuery} />
+      <ComboPackSection searchQuery={searchQuery} />
       <HowItWorks />
       <FAQ />
       <Footer />
