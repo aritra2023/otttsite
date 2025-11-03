@@ -120,21 +120,6 @@ export default function HeroCarousel() {
         </div>
       </div>
 
-      <button
-        onClick={prevSlide}
-        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-xl text-white hover-elevate border border-white/20"
-        data-testid="button-prev-slide"
-      >
-        <ChevronRight className="h-5 w-5" />
-      </button>
-      <button
-        onClick={nextSlide}
-        className="hidden md:block absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-xl text-white hover-elevate border border-white/20"
-        data-testid="button-next-slide"
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </button>
-
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, index) => (
           <button
