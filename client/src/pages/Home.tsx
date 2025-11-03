@@ -5,6 +5,7 @@ import Categories from "@/components/Categories";
 import ComboPackSection from "@/components/ComboPackSection";
 import SubscriptionsSection from "@/components/SubscriptionsSection";
 import PopularPlatforms from "@/components/PopularPlatforms";
+import Reviews from "@/components/Reviews";
 import HowItWorks from "@/components/HowItWorks";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
@@ -20,6 +21,7 @@ export default function Home() {
       <Categories onCategoryClick={setSearchQuery} />
       <SubscriptionsSection searchQuery={searchQuery} />
       <ComboPackSection searchQuery={searchQuery} />
+      <Reviews />
       <HowItWorks />
       <FAQ />
       <Footer />
