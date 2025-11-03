@@ -100,7 +100,7 @@ export default function Navbar({ onSearch }: NavbarProps) {
           </div>
 
           {/* Center - Logo */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-3">
+          <div className="absolute left-1/2 transform -translate-x-1/2">
             <img 
               key={theme}
               src={theme === "dark" ? darkLogoImage : logoImage} 
@@ -108,18 +108,6 @@ export default function Navbar({ onSearch }: NavbarProps) {
               className="h-12 md:h-14 w-auto object-contain transition-opacity duration-200"
               data-testid="img-logo"
             />
-            <button
-              onClick={toggleTheme}
-              className="p-2 hover:bg-muted rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
-              data-testid="button-theme-toggle"
-              aria-label="Toggle dark mode"
-            >
-              {theme === "light" ? (
-                <Moon className="h-5 w-5 text-foreground transition-transform duration-300 hover:rotate-12" />
-              ) : (
-                <Sun className="h-5 w-5 text-foreground transition-transform duration-300 hover:rotate-12" />
-              )}
-            </button>
           </div>
 
           {/* Right - Search & Cart Icons */}
@@ -156,13 +144,25 @@ export default function Navbar({ onSearch }: NavbarProps) {
           />
           <div className="fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border z-50 animate-in slide-in-from-left duration-300">
             <div className="px-4 py-6 space-y-2">
-              <div className="mb-6">
+              <div className="mb-6 flex items-center gap-3">
                 <img 
                   src={theme === "dark" ? darkLogoImage : logoImage} 
                   alt="SUBFLIX" 
                   className="h-14 w-auto object-contain"
                   data-testid="img-logo-mobile"
                 />
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 hover:bg-muted rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
+                  data-testid="button-theme-toggle"
+                  aria-label="Toggle dark mode"
+                >
+                  {theme === "light" ? (
+                    <Moon className="h-5 w-5 text-foreground transition-transform duration-300 hover:rotate-12" />
+                  ) : (
+                    <Sun className="h-5 w-5 text-foreground transition-transform duration-300 hover:rotate-12" />
+                  )}
+                </button>
               </div>
               
               <div className="space-y-1">
