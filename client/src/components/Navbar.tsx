@@ -100,7 +100,7 @@ export default function Navbar({ onSearch }: NavbarProps) {
           </div>
 
           {/* Center - Logo */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-3">
             <img 
               key={theme}
               src={theme === "dark" ? darkLogoImage : logoImage} 
@@ -108,6 +108,18 @@ export default function Navbar({ onSearch }: NavbarProps) {
               className="h-12 md:h-14 w-auto object-contain transition-opacity duration-200"
               data-testid="img-logo"
             />
+            <button
+              onClick={toggleTheme}
+              className="p-2 hover:bg-muted rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
+              data-testid="button-theme-toggle"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "light" ? (
+                <Moon className="h-5 w-5 text-foreground transition-transform duration-300 hover:rotate-12" />
+              ) : (
+                <Sun className="h-5 w-5 text-foreground transition-transform duration-300 hover:rotate-12" />
+              )}
+            </button>
           </div>
 
           {/* Right - Search & Cart Icons */}
@@ -157,6 +169,7 @@ export default function Navbar({ onSearch }: NavbarProps) {
                 <button
                   onClick={() => {
                     setLocation("/");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                     setMobileMenuOpen(false);
                   }}
                   className="block w-full text-left px-4 py-3 rounded-lg font-medium hover:bg-muted/50"
@@ -247,23 +260,7 @@ export default function Navbar({ onSearch }: NavbarProps) {
               >
                 Contact
               </button>
-              <div className="flex items-center justify-between px-4 py-3 font-medium">
-                <span>Dark Mode</span>
-                <button
-                  onClick={toggleTheme}
-                  className="relative p-1.5 bg-primary/10 hover:bg-primary/20 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95"
-                  data-testid="button-theme-toggle-mobile"
-                  aria-label="Toggle dark mode"
-                >
-                  <div className="relative">
-                    {theme === "light" ? (
-                      <Moon className="h-4 w-4 text-primary animate-in fade-in spin-in-180 duration-300" />
-                    ) : (
-                      <Sun className="h-4 w-4 text-primary animate-in fade-in spin-in-180 duration-300" />
-                    )}
-                  </div>
-                </button>
-              </div>
+              
               <Button
                 variant="default"
                 className="w-full mt-4 rounded-full"
