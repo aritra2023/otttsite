@@ -1,5 +1,7 @@
-import { Star, Quote } from "lucide-react";
+import { useEffect, useCallback } from "react";
+import { Star, Quote, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import useEmblaCarousel from "embla-carousel-react";
 
 const reviews = [
   {
@@ -13,7 +15,7 @@ const reviews = [
   {
     name: "Priya Patel",
     location: "Ahmedabad",
-    rating: 5,
+    rating: 4.5,
     review: "Best platform for OTT subscriptions! Maine Amazon Prime aur Hotstar dono liye. Customer support bhi kaafi helpful hai. Will definitely buy again.",
     date: "1 month ago",
     verified: true
@@ -21,7 +23,7 @@ const reviews = [
   {
     name: "Amit Kumar",
     location: "Delhi",
-    rating: 5,
+    rating: 4,
     review: "Initially I was skeptical but after purchasing I'm completely satisfied. Got Spotify Premium family plan at such amazing price. Totally genuine service! 👍",
     date: "3 weeks ago",
     verified: true
@@ -37,7 +39,7 @@ const reviews = [
   {
     name: "Vikram Singh",
     location: "Pune",
-    rating: 5,
+    rating: 4.5,
     review: "Value for money! Official subscription se compare karo toh yaha pe 70% tak save ho jata hai. Service quality bhi top notch hai. No complaints at all! ⭐",
     date: "2 months ago",
     verified: true
@@ -45,14 +47,72 @@ const reviews = [
   {
     name: "Anjali Gupta",
     location: "Jaipur",
-    rating: 5,
+    rating: 4,
     review: "WhatsApp pe order kiya, within minutes activate ho gaya account. Very smooth process and the seller is very cooperative. Thank you so much! 💯",
     date: "1 month ago",
     verified: true
   }
 ];
 
+function ReviewStars({ rating }: { rating: number }) {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  const emptyStars = 5 - Math.ceil(rating);
+
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <Star
+        key={`full-${i}`}
+        className="h-4 w-4 text-yellow-500 fill-yellow-500"
+      />
+    );
+  }
+
+  if (hasHalfStar) {
+    stars.push(
+      <div key="half" className="relative h-4 w-4">
+        <Star className="h-4 w-4 text-yellow-500 absolute" />
+        <div className="overflow-hidden absolute w-1/2">
+          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+        </div>
+      </div>
+    );
+  }
+
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(
+      <Star
+        key={`empty-${i}`}
+        className="h-4 w-4 text-yellow-500"
+      />
+    );
+  }
+
+  return <>{stars}</>;
+}
+
 export default function Reviews() {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: true,
+    align: "start",
+    slidesToScroll: 1
+  });
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const autoplay = setInterval(() => {
+      scrollNext();
+    }, 3000);
+
+    return () => clearInterval(autoplay);
+  }, [emblaApi, scrollNext]);
+
   return (
     <section className="py-12 md:py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,66 +129,54 @@ export default function Reviews() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reviews.map((review, index) => (
-            <Card 
-              key={index} 
-              className="hover-elevate transition-all duration-300 border-2"
-              data-testid={`card-review-${index}`}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex gap-0.5">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 text-yellow-500 fill-yellow-500"
-                        data-testid={`icon-star-${index}-${i}`}
-                      />
-                    ))}
-                  </div>
-                  <Quote className="h-8 w-8 text-primary/20" />
-                </div>
-
-                <p className="text-sm md:text-base mb-4 leading-relaxed" data-testid={`text-review-${index}`}>
-                  {review.review}
-                </p>
-
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm" data-testid={`text-reviewer-name-${index}`}>
-                        {review.name}
-                      </p>
-                      {review.verified && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                          ✓ Verified
-                        </span>
-                      )}
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-6">
+            {reviews.map((review, index) => (
+              <div 
+                key={index}
+                className="flex-[0_0_100%] min-w-0 md:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)]"
+              >
+                <Card 
+                  className="hover-elevate transition-all duration-300 border-2 h-full"
+                  data-testid={`card-review-${index}`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex gap-0.5">
+                        <ReviewStars rating={review.rating} />
+                      </div>
+                      <Quote className="h-8 w-8 text-primary/20" />
                     </div>
-                    <p className="text-xs text-muted-foreground" data-testid={`text-reviewer-location-${index}`}>
-                      {review.location}
-                    </p>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {review.date}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        <div className="mt-12 text-center">
-          <div className="inline-flex flex-col items-center gap-2 px-6 py-4 rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
-            <div className="flex items-center gap-1">
-              <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-              <span className="text-2xl font-bold">4.9</span>
-              <span className="text-muted-foreground">/5</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Average rating from 2000+ customers
-            </p>
+                    <p className="text-sm md:text-base mb-4 leading-relaxed" data-testid={`text-review-${index}`}>
+                      {review.review}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-semibold text-sm" data-testid={`text-reviewer-name-${index}`}>
+                            {review.name}
+                          </p>
+                          {review.verified && (
+                            <CheckCircle2 
+                              className="h-4 w-4 text-white fill-blue-500" 
+                              data-testid={`icon-verified-${index}`}
+                            />
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground" data-testid={`text-reviewer-location-${index}`}>
+                          {review.location}
+                        </p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {review.date}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -21,8 +21,8 @@ export default function Home() {
       <Categories onCategoryClick={setSearchQuery} />
       <SubscriptionsSection searchQuery={searchQuery} />
       <ComboPackSection searchQuery={searchQuery} />
-      <Reviews />
       <HowItWorks />
+      <Reviews />
       <FAQ />
       <Footer />
       <WhatsAppButton />
