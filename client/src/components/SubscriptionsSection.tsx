@@ -14,7 +14,7 @@ export default function SubscriptionsSection({ searchQuery = "" }: Subscriptions
   const nonComboProducts = products.filter(product => product.category !== "Combo Pack");
 
   const filteredProducts = searchQuery 
-    ? nonComboProducts.filter(product => 
+    ? products.filter(product => 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.category.toLowerCase().includes(searchQuery.toLowerCase())
       )
