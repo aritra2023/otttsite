@@ -155,6 +155,17 @@ export default function Navbar({ onSearch }: NavbarProps) {
               
               <div className="space-y-1">
                 <button
+                  onClick={() => {
+                    setLocation("/");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-3 rounded-lg font-medium hover:bg-muted/50"
+                  data-testid="link-home-mobile"
+                >
+                  Home
+                </button>
+
+                <button
                   onClick={() => setCategoriesOpen(!categoriesOpen)}
                   className="flex items-center justify-between w-full text-left px-4 py-3 rounded-lg font-medium hover:bg-muted/50"
                   data-testid="button-categories-mobile"
