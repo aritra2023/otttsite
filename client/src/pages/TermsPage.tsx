@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ShieldCheck, AlertCircle, FileText, Lock } from "lucide-react";
+import { ShieldCheck, AlertCircle, FileText, Lock, Phone, Mail } from "lucide-react";
 
 export default function TermsPage() {
   return (
@@ -474,7 +474,7 @@ export default function TermsPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-xl">📞</span>
+                    <Phone className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Via Phone Number (WhatsApp/Call)</p>
@@ -485,7 +485,7 @@ export default function TermsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-xl">✉️</span>
+                    <Mail className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Via Email</p>
