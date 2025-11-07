@@ -1,9 +1,22 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initTelegramBot } from "./telegram-bot";
 
 const app = express();
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || "subflix-admin-secret-key-change-in-production",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000,
+  },
+}));
 
 declare module 'http' {
   interface IncomingMessage {
