@@ -26,8 +26,6 @@ const productFormSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   image: z.string().url("Must be a valid URL"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  actualPrice: z.coerce.number().min(1, "Actual price must be greater than 0"),
-  discountedPrice: z.coerce.number().min(1, "Discounted price must be greater than 0"),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -62,8 +60,6 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
-      actualPrice: (product?.price1MonthActual && product.price1MonthActual > 0) ? product.price1MonthActual : undefined,
-      discountedPrice: (product?.price1MonthSelling && product.price1MonthSelling > 0) ? product.price1MonthSelling : undefined,
     });
   }, [product]);
 
@@ -74,8 +70,6 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
-      actualPrice: (product?.price1MonthActual && product.price1MonthActual > 0) ? product.price1MonthActual : undefined,
-      discountedPrice: (product?.price1MonthSelling && product.price1MonthSelling > 0) ? product.price1MonthSelling : undefined,
     },
   });
 
@@ -86,18 +80,18 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         name: data.name,
         image: data.image,
         description: data.description,
-        price1MonthActual: data.actualPrice,
-        price1MonthSelling: data.discountedPrice,
-        inStock1Month: true,
-        price3MonthActual: data.actualPrice * 3,
-        price3MonthSelling: data.discountedPrice * 3,
-        inStock3Month: true,
-        price6MonthActual: data.actualPrice * 6,
-        price6MonthSelling: data.discountedPrice * 6,
-        inStock6Month: true,
-        price12MonthActual: data.actualPrice * 12,
-        price12MonthSelling: data.discountedPrice * 12,
-        inStock12Month: true,
+        price1MonthActual: 0,
+        price1MonthSelling: 0,
+        inStock1Month: false,
+        price3MonthActual: 0,
+        price3MonthSelling: 0,
+        inStock3Month: false,
+        price6MonthActual: 0,
+        price6MonthSelling: 0,
+        inStock6Month: false,
+        price12MonthActual: 0,
+        price12MonthSelling: 0,
+        inStock12Month: false,
         customOptions: customOptions
           .filter(opt => opt.actualPrice > 0 && opt.sellingPrice > 0)
           .map(opt => ({
@@ -249,49 +243,9 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="actualPrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Actual Price (₹)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="499"
-                    data-testid="input-actual-price"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="discountedPrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Selling Price (₹)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="299"
-                    data-testid="input-selling-price"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
         <div className="border-t pt-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Additional Options (Optional)</h3>
+            <h3 className="text-sm font-semibold">Pricing Options</h3>
             <Button
               type="button"
               variant="outline"
