@@ -1,4 +1,4 @@
-import { SiWhatsapp, SiInstagram, SiFacebook } from "react-icons/si";
+import { SiWhatsapp, SiInstagram, SiTelegram } from "react-icons/si";
 import { Mail, Phone, MapPin, Clock, ShieldCheck } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -50,11 +50,13 @@ export default function Footer() {
                 <SiInstagram className="h-5 w-5" />
               </a>
               <a 
-                href="#" 
+                href="https://t.me/subflixsupport_bot" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="bg-white/10 hover:bg-primary hover:scale-110 p-3 rounded-full transition-all duration-300"
-                data-testid="link-facebook"
+                data-testid="link-telegram"
               >
-                <SiFacebook className="h-5 w-5" />
+                <SiTelegram className="h-5 w-5" />
               </a>
             </div>
           </div>
