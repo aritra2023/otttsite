@@ -80,7 +80,41 @@ Preferred communication style: Simple, everyday language.
 - Migration support via drizzle-kit
 - Storage interface abstraction for easy swapping between in-memory and database implementations
 
-**Telegram Bot Integration:**
+**Web-Based Admin Panel (Primary Management Interface):**
+- Modern, secure web interface for product management at `/admin`
+- **Authentication:**
+  - Password-based login with bcrypt hashing
+  - Session management with httpOnly, secure, sameSite cookies
+  - Session regeneration on login/logout to prevent fixation
+  - Environment-based configuration (ADMIN_PASSWORD_HASH)
+  - Development default: "Aritra@2005" (with warning)
+  - Production: Requires ADMIN_PASSWORD_HASH environment variable or server fails to start
+- **Admin Dashboard Features:**
+  - Product listing with cards showing image, name, description, pricing
+  - Create new products with comprehensive form
+  - Edit existing products with pre-filled data
+  - Delete products with confirmation dialog
+  - Custom pricing options support (add/remove dynamic options)
+  - Real-time form validation using Zod
+  - Toast notifications for all actions
+  - Responsive design matching main site aesthetic
+- **Product Form Fields:**
+  - Category selection (OTT, Music, Gaming, Education, Other)
+  - Product name and image URL
+  - Description (multiline)
+  - Actual price and selling price (mapped to 1-month tier)
+  - Custom options builder for additional pricing tiers
+  - Automatic calculation of 3/6/12 month pricing
+- **Security Features:**
+  - All product mutations (POST/PATCH/DELETE) require admin authentication
+  - Request validation using insertProductSchema.partial() for updates
+  - Protected routes redirect unauthorized users to login
+  - Session-based authentication with secure cookie configuration
+- **Routes:**
+  - `/admin` - Login page
+  - `/admin/dashboard` - Product management dashboard
+
+**Telegram Bot Integration (Alternative Interface):**
 - Automated product management via Telegram bot
 - `/newpost` command workflow for adding new subscription products
 - Interactive flow: category selection → product name → description → image (URL or photo) → pricing for 4 durations
