@@ -18,6 +18,8 @@ import {
 import type { Product } from "@shared/schema";
 import { Plus, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const productFormSchema = z.object({
   category: z.string().min(1, "Category is required"),
@@ -35,6 +37,7 @@ interface CustomOption {
   label: string;
   actualPrice: number;
   sellingPrice: number;
+  inStock?: boolean;
 }
 
 interface ProductFormProps {
@@ -50,9 +53,12 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
   );
 
   useEffect(() => {
-    setCustomOptions(product?.customOptions || []);
+    const filteredOptions = (product?.customOptions || []).filter(
+      opt => opt.actualPrice > 0 && opt.sellingPrice > 0
+    );
+    setCustomOptions(filteredOptions);
     form.reset({
-      category: product?.category || "OTT",
+      category: product?.category || "Subscriptions",
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
@@ -64,7 +70,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      category: product?.category || "OTT",
+      category: product?.category || "Subscriptions",
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
@@ -92,13 +98,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         price12MonthActual: data.actualPrice * 12,
         price12MonthSelling: data.discountedPrice * 12,
         inStock12Month: true,
-        customOptions: customOptions.map(opt => ({
-          id: opt.id,
-          label: opt.label,
-          actualPrice: opt.actualPrice,
-          sellingPrice: opt.sellingPrice,
-          inStock: true,
-        })),
+        customOptions: customOptions
+          .filter(opt => opt.actualPrice > 0 && opt.sellingPrice > 0)
+          .map(opt => ({
+            id: opt.id,
+            label: opt.label,
+            actualPrice: opt.actualPrice,
+            sellingPrice: opt.sellingPrice,
+            inStock: opt.inStock !== undefined ? opt.inStock : true,
+          })),
       };
 
       if (product) {
@@ -134,6 +142,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       label: "",
       actualPrice: 0,
       sellingPrice: 0,
+      inStock: true,
     };
     setCustomOptions([...customOptions, newOption]);
   };
@@ -142,7 +151,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
     setCustomOptions(customOptions.filter(opt => opt.id !== id));
   };
 
-  const updateCustomOption = (id: string, field: keyof CustomOption, value: string | number) => {
+  const updateCustomOption = (id: string, field: keyof CustomOption, value: string | number | boolean) => {
     setCustomOptions(
       customOptions.map(opt =>
         opt.id === id ? { ...opt, [field]: value } : opt
@@ -170,11 +179,12 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="OTT">OTT Platform</SelectItem>
+                  <SelectItem value="Subscriptions">Subscriptions</SelectItem>
+                  <SelectItem value="Combo Pack">Combo Pack</SelectItem>
+                  <SelectItem value="Adult">Adult</SelectItem>
                   <SelectItem value="Music">Music</SelectItem>
-                  <SelectItem value="Gaming">Gaming</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="Software">Software</SelectItem>
+                  <SelectItem value="Other Items">Other Items</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -295,34 +305,50 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           </div>
 
           {customOptions.map((option, index) => (
-            <div key={option.id} className="grid grid-cols-12 gap-2 mb-2 items-end">
-              <div className="col-span-5">
-                <Input
-                  placeholder="Option name"
-                  value={option.label}
-                  onChange={(e) => updateCustomOption(option.id, "label", e.target.value)}
-                  data-testid={`input-option-label-${index}`}
-                />
+            <div key={option.id} className="border rounded-lg p-3 mb-3 bg-muted/30">
+              <div className="grid grid-cols-12 gap-2 mb-2">
+                <div className="col-span-6">
+                  <Label className="text-xs mb-1 block">Option Name</Label>
+                  <Input
+                    placeholder="e.g., 1 Month, 6 Months"
+                    value={option.label}
+                    onChange={(e) => updateCustomOption(option.id, "label", e.target.value)}
+                    data-testid={`input-option-label-${index}`}
+                  />
+                </div>
+                <div className="col-span-3">
+                  <Label className="text-xs mb-1 block">Actual Price</Label>
+                  <Input
+                    type="number"
+                    placeholder="299"
+                    value={option.actualPrice || ""}
+                    onChange={(e) => updateCustomOption(option.id, "actualPrice", Number(e.target.value))}
+                    data-testid={`input-option-actual-${index}`}
+                  />
+                </div>
+                <div className="col-span-3">
+                  <Label className="text-xs mb-1 block">Selling Price</Label>
+                  <Input
+                    type="number"
+                    placeholder="199"
+                    value={option.sellingPrice || ""}
+                    onChange={(e) => updateCustomOption(option.id, "sellingPrice", Number(e.target.value))}
+                    data-testid={`input-option-selling-${index}`}
+                  />
+                </div>
               </div>
-              <div className="col-span-3">
-                <Input
-                  type="number"
-                  placeholder="Actual"
-                  value={option.actualPrice || ""}
-                  onChange={(e) => updateCustomOption(option.id, "actualPrice", Number(e.target.value))}
-                  data-testid={`input-option-actual-${index}`}
-                />
-              </div>
-              <div className="col-span-3">
-                <Input
-                  type="number"
-                  placeholder="Selling"
-                  value={option.sellingPrice || ""}
-                  onChange={(e) => updateCustomOption(option.id, "sellingPrice", Number(e.target.value))}
-                  data-testid={`input-option-selling-${index}`}
-                />
-              </div>
-              <div className="col-span-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id={`stock-${option.id}`}
+                    checked={option.inStock !== false}
+                    onCheckedChange={(checked) => updateCustomOption(option.id, "inStock", checked)}
+                    data-testid={`switch-stock-${index}`}
+                  />
+                  <Label htmlFor={`stock-${option.id}`} className="text-sm cursor-pointer">
+                    {option.inStock !== false ? "In Stock" : "Out of Stock"}
+                  </Label>
+                </div>
                 <Button
                   type="button"
                   variant="ghost"
@@ -331,6 +357,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                   data-testid={`button-remove-option-${index}`}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
+                  <span className="ml-1 text-xs">Remove</span>
                 </Button>
               </div>
             </div>
