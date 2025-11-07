@@ -62,8 +62,8 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
-      actualPrice: product?.price1MonthActual || 0,
-      discountedPrice: product?.price1MonthSelling || 0,
+      actualPrice: (product?.price1MonthActual && product.price1MonthActual > 0) ? product.price1MonthActual : undefined,
+      discountedPrice: (product?.price1MonthSelling && product.price1MonthSelling > 0) ? product.price1MonthSelling : undefined,
     });
   }, [product]);
 
@@ -74,8 +74,8 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
-      actualPrice: product?.price1MonthActual || 0,
-      discountedPrice: product?.price1MonthSelling || 0,
+      actualPrice: (product?.price1MonthActual && product.price1MonthActual > 0) ? product.price1MonthActual : undefined,
+      discountedPrice: (product?.price1MonthSelling && product.price1MonthSelling > 0) ? product.price1MonthSelling : undefined,
     },
   });
 
@@ -172,7 +172,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger data-testid="select-category">
                     <SelectValue placeholder="Select category" />
