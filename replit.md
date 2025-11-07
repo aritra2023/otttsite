@@ -99,12 +99,14 @@ Preferred communication style: Simple, everyday language.
   - Toast notifications for all actions
   - Responsive design matching main site aesthetic
 - **Product Form Fields:**
-  - Category selection (OTT, Music, Gaming, Education, Other)
+  - Category selection (Subscriptions, Combo Pack, Adult, Music, Software, Other Items)
   - Product name and image URL
   - Description (multiline)
-  - Actual price and selling price (mapped to 1-month tier)
-  - Custom options builder for additional pricing tiers
-  - Automatic calculation of 3/6/12 month pricing
+  - Pricing Options with stock toggle:
+    - Custom pricing options builder for all product tiers
+    - Each option has: name, actual price, selling price, and stock status toggle
+    - Options with zero prices are automatically filtered out
+    - Stock toggle switch for each pricing option (In Stock / Out of Stock)
 - **Security Features:**
   - All product mutations (POST/PATCH/DELETE) require admin authentication
   - Request validation using insertProductSchema.partial() for updates
