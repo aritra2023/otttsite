@@ -36,6 +36,7 @@ export default function ComboPackSection({ searchQuery = "" }: ComboPackSectionP
     }));
 
     return {
+      productId: product.id,
       platform: product.name,
       logo: product.image,
       popular: false,

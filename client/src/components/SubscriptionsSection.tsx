@@ -37,6 +37,7 @@ export default function SubscriptionsSection({ searchQuery = "" }: Subscriptions
     }));
 
     return {
+      productId: product.id,
       platform: product.name,
       logo: product.image,
       popular: false,

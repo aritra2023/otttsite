@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ interface Plan {
 }
 
 interface SubscriptionCardProps {
+  productId: string;
   platform: string;
   logo: string;
   plans: Plan[];
@@ -26,12 +28,14 @@ interface SubscriptionCardProps {
 }
 
 export default function SubscriptionCard({
+  productId,
   platform,
   logo,
   plans,
   features,
   popular = false,
 }: SubscriptionCardProps) {
+  const [, setLocation] = useLocation();
   const firstInStockIndex = plans.findIndex(plan => plan.inStock);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalSelectedPlanIndex, setModalSelectedPlanIndex] = useState(firstInStockIndex >= 0 ? firstInStockIndex : 0);
@@ -107,7 +111,11 @@ export default function SubscriptionCard({
 
   return (
     <>
-      <Card className={`relative overflow-visible hover-elevate transition-all duration-300 h-full flex flex-col group ${popular ? 'border-primary/50' : ''}`}>
+      <Card 
+        className={`relative overflow-visible hover-elevate transition-all duration-300 h-full flex flex-col group cursor-pointer ${popular ? 'border-primary/50' : ''}`}
+        onClick={() => setLocation(`/product/${productId}`)}
+        data-testid={`card-product-${productId}`}
+      >
         {popular && (
           <div className="absolute -top-2 right-3">
             <Badge variant="default" className="shadow-lg text-xs">
@@ -151,7 +159,10 @@ export default function SubscriptionCard({
 
           <Button
             className="w-full group-hover:shadow-lg transition-all rounded-full"
-            onClick={handleAddToCart}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart();
+            }}
             data-testid={`button-add-to-cart-${platform.toLowerCase().replace(/\s+/g, '-')}`}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />

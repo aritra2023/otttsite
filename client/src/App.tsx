@@ -11,12 +11,14 @@ import FAQPage from "@/pages/FAQPage";
 import TermsPage from "@/pages/TermsPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import AdminDashboard from "@/pages/AdminDashboard";
+import ProductDetails from "@/pages/ProductDetails";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/product/:id" component={ProductDetails} />
       <Route path="/cart" component={Cart} />
       <Route path="/faq" component={FAQPage} />
       <Route path="/terms" component={TermsPage} />
