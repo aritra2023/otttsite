@@ -4,9 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { X, ShoppingCart, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Tag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -18,11 +17,6 @@ export default function ProductDetails() {
   const [, setLocation] = useLocation();
   const productId = params?.id;
   const [selectedDuration, setSelectedDuration] = useState<string>("");
-  const [expandedSections, setExpandedSections] = useState({
-    description: true,
-    features: true,
-    faq: true,
-  });
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -157,89 +151,94 @@ export default function ProductDetails() {
     });
   };
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
-
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar onSearch={() => {}} />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         <Button
           variant="ghost"
           onClick={() => setLocation("/")}
-          className="mb-4"
+          className="mb-6 gap-2"
           data-testid="button-back"
         >
-          <X className="h-4 w-4 mr-2" />
-          Back to Home
+          <ArrowLeft className="h-4 w-4" />
+          Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="flex items-center justify-center">
-            <Card className="w-full max-w-md overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-square bg-black dark:bg-gray-900 flex items-center justify-center">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain p-8"
-                    data-testid="img-product"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="lg:sticky lg:top-24 h-fit">
+            <div className="bg-white dark:bg-card rounded-lg p-8 md:p-12 flex items-center justify-center border">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full max-w-sm h-auto object-contain"
+                data-testid="img-product"
+              />
+            </div>
           </div>
 
           <div className="space-y-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-2" data-testid="text-product-name">
+              <h1 className="text-3xl md:text-4xl font-bold mb-3" data-testid="text-product-name">
                 {product.name}
               </h1>
-              <div className="flex items-baseline gap-3 mb-4">
-                {selectedPlan && (
-                  <>
-                    <span className="text-3xl font-bold text-primary" data-testid="text-price">
-                      ₹{selectedPlan.sellingPrice}
-                    </span>
-                    {selectedPlan.actualPrice > selectedPlan.sellingPrice && (
-                      <>
-                        <span className="text-lg text-muted-foreground line-through" data-testid="text-original-price">
-                          ₹{selectedPlan.actualPrice}
-                        </span>
-                        <Badge variant="destructive" data-testid="badge-discount">
-                          {discountPercentage}% OFF
-                        </Badge>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
+              
+              {selectedPlan && (
+                <div className="flex items-baseline gap-3 flex-wrap mb-4">
+                  <span className="text-4xl font-bold" data-testid="text-price">
+                    ₹{selectedPlan.sellingPrice}
+                  </span>
+                  {selectedPlan.actualPrice > selectedPlan.sellingPrice && (
+                    <>
+                      <span className="text-xl text-muted-foreground line-through" data-testid="text-original-price">
+                        ₹{selectedPlan.actualPrice}
+                      </span>
+                      <Badge className="text-sm px-3 py-1 bg-green-600 hover:bg-green-700" data-testid="badge-discount">
+                        {discountPercentage}% OFF
+                      </Badge>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Duration:</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <Separator />
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-base">Duration:</span>
+                <span className="text-sm text-muted-foreground">{selectedPlan?.months || 0} Month{selectedPlan && selectedPlan.months !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 {availablePlans.map((plan) => (
-                  <Button
+                  <button
                     key={plan.duration}
-                    variant={selectedDuration === plan.duration ? "default" : "outline"}
-                    onClick={() => setSelectedDuration(plan.duration)}
+                    onClick={() => plan.inStock && setSelectedDuration(plan.duration)}
                     disabled={!plan.inStock}
-                    className="w-full"
+                    className={`
+                      px-4 py-3 rounded-md border-2 transition-all font-medium text-sm
+                      ${selectedDuration === plan.duration
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border hover:border-primary/50'
+                      }
+                      ${!plan.inStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    `}
                     data-testid={`button-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {plan.duration}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
 
+            <Separator />
+
             <div className="flex gap-3">
               <Button
                 onClick={handleBuyNow}
-                className="flex-1 bg-primary text-primary-foreground"
+                size="lg"
+                className="flex-1 text-base h-12 bg-primary hover:bg-primary/90"
                 disabled={!selectedPlan?.inStock}
                 data-testid="button-buy-now"
               >
@@ -247,145 +246,83 @@ export default function ProductDetails() {
               </Button>
               <Button
                 onClick={handleAddToCart}
+                size="lg"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-base h-12 gap-2"
                 disabled={!selectedPlan?.inStock}
                 data-testid="button-add-to-cart"
               >
-                <ShoppingCart className="h-4 w-4 mr-2" />
+                <ShoppingCart className="h-5 w-5" />
                 Add to Cart
               </Button>
             </div>
 
             {!selectedPlan?.inStock && (
-              <p className="text-sm text-destructive" data-testid="text-out-of-stock">
+              <p className="text-sm text-destructive font-medium" data-testid="text-out-of-stock">
                 This variant is currently out of stock
               </p>
             )}
 
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-2">
-                  <Sparkles className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold mb-1">Offers</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Get 5% off on orders above ₹50
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Use code: TRYWEBEW00 for 5% off
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      *Coupons can be applied at checkout
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <button
-                onClick={() => toggleSection("description")}
-                className="flex items-center justify-between w-full text-left"
-                data-testid="button-toggle-description"
-              >
-                <h2 className="text-xl font-semibold">Product Description</h2>
-                {expandedSections.description ? (
-                  <ChevronUp className="h-5 w-5" />
-                ) : (
-                  <ChevronDown className="h-5 w-5" />
-                )}
-              </button>
-              {expandedSections.description && (
-                <>
-                  <Separator className="my-4" />
-                  <p className="text-muted-foreground" data-testid="text-description">
-                    Save big with our {product.name} plans, affordable, reliable, and perfect for
-                    unlimited streaming of movies, shows, and originals every month.
+            <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-md p-4">
+              <div className="flex gap-3">
+                <Tag className="h-5 w-5 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-sm">Offers</p>
+                  <p className="text-sm text-muted-foreground">
+                    Get 5% off on orders above ₹50
                   </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Use code: <span className="font-bold">TRYWEBEW00</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground italic">
+                    *Coupons can be applied at checkout
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <button
-                onClick={() => toggleSection("features")}
-                className="flex items-center justify-between w-full text-left"
-                data-testid="button-toggle-features"
-              >
-                <h2 className="text-xl font-semibold">More Details</h2>
-                {expandedSections.features ? (
-                  <ChevronUp className="h-5 w-5" />
-                ) : (
-                  <ChevronDown className="h-5 w-5" />
-                )}
-              </button>
-              {expandedSections.features && (
-                <>
-                  <Separator className="my-4" />
-                  <ul className="space-y-3">
-                    {features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-primary mt-1 flex-shrink-0">•</span>
-                        <span className="text-muted-foreground" data-testid={`text-feature-${idx}`}>
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </CardContent>
-          </Card>
+            <Separator className="my-6" />
 
-          <Card>
-            <CardContent className="p-6">
-              <button
-                onClick={() => toggleSection("faq")}
-                className="flex items-center justify-between w-full text-left"
-                data-testid="button-toggle-faq"
-              >
-                <h2 className="text-xl font-semibold">Q&A</h2>
-                {expandedSections.faq ? (
-                  <ChevronUp className="h-5 w-5" />
-                ) : (
-                  <ChevronDown className="h-5 w-5" />
-                )}
-              </button>
-              {expandedSections.faq && (
-                <>
-                  <Separator className="my-4" />
-                  <div className="space-y-4">
-                    <div>
-                      <p className="font-semibold mb-2">
-                        Q: Will the subscription be activated on my number or Gmail?
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        A: No—the plan is shared. You'll receive unique login and sign in code to
-                        login, not an activation on your personal email or phone.
-                      </p>
-                    </div>
-                    <Separator />
-                    <div>
-                      <p className="font-semibold mb-2">
-                        Q: How will I get my login credentials?
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        A: Simply share your order ID with us on WhatsApp, and we'll send your
-                        secure {product.name} details.
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-bold mb-3">Product Description</h2>
+                <p className="text-muted-foreground leading-relaxed" data-testid="text-description">
+                  Save big with our {product.name} plans, affordable, reliable, and perfect for
+                  unlimited streaming of movies, shows, and originals every month.
+                </p>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h2 className="text-xl font-bold mb-3">Interruptions-Free Streaming</h2>
+                <ul className="space-y-2">
+                  {features.map((feature, idx) => (
+                    <li key={idx} className="flex gap-2 text-muted-foreground">
+                      <span className="text-primary font-bold mt-1">•</span>
+                      <span data-testid={`text-feature-${idx}`}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h2 className="text-xl font-bold mb-4">Q: Will the subscription be activated on my number or Gmail?</h2>
+                <p className="text-muted-foreground mb-6">
+                  <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
+                  login, not an activation on your personal email or phone.
+                </p>
+
+                <h2 className="text-xl font-bold mb-4">Q: How will I get my login credentials?</h2>
+                <p className="text-muted-foreground">
+                  <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
+                  secure {product.name} details.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
