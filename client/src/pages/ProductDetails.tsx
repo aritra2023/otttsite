@@ -263,7 +263,7 @@ export default function ProductDetails() {
               </Select>
             </div>
 
-            <div className="bg-orange-500/25 dark:bg-orange-500/25 border border-orange-500/25 dark:border-orange-500/25 rounded-md p-3">
+            <div className="bg-orange-500/25 dark:bg-orange-500/25 rounded-md p-3">
               <div className="flex gap-2 justify-between items-start">
                 <div className="flex gap-2">
                   <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
@@ -281,7 +281,7 @@ export default function ProductDetails() {
                   onClick={handleApplyCoupon}
                   variant="ghost"
                   size="sm"
-                  className="text-xs h-7 px-3"
+                  className="text-xs h-7 px-3 no-default-hover-elevate"
                   data-testid="button-apply-coupon"
                 >
                   {couponApplied ? "Applied" : "Apply"}
