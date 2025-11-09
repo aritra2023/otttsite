@@ -5,6 +5,7 @@ import type { Product } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShoppingCart, ArrowLeft, Tag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -167,16 +168,16 @@ export default function ProductDetails() {
         </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-16 lg:auto-rows-fr">
-          <div className="bg-white dark:bg-card rounded-md p-6 flex items-center justify-center border">
+          <div className="bg-white dark:bg-card rounded-md p-4 flex items-center justify-center border">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full max-w-xs h-auto object-contain"
+              className="w-full max-w-[200px] h-auto object-contain"
               data-testid="img-product"
             />
           </div>
 
-          <div className="space-y-3 bg-white dark:bg-white rounded-md p-4">
+          <div className="space-y-3 bg-white dark:bg-white rounded-md p-3">
             <div>
               <h1 className="text-xl md:text-2xl font-bold mb-2" data-testid="text-product-name">
                 {product.name}
@@ -207,24 +208,31 @@ export default function ProductDetails() {
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-sm">Select Duration:</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                {availablePlans.map((plan) => (
-                  <Button
-                    key={plan.duration}
-                    variant="outline"
-                    onClick={() => plan.inStock && setSelectedDuration(plan.duration)}
-                    disabled={!plan.inStock}
-                    className={`h-auto py-3 text-sm font-medium ${
-                      selectedDuration === plan.duration 
-                        ? 'bg-orange-500/25 text-gray-500 border-orange-500/25 hover:bg-orange-500/30 dark:bg-orange-500/25 dark:text-gray-400 dark:hover:bg-orange-500/30' 
-                        : 'text-black dark:text-white'
-                    }`}
-                    data-testid={`button-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    {plan.duration}
-                  </Button>
-                ))}
-              </div>
+              <Select
+                value={selectedDuration}
+                onValueChange={(value) => {
+                  const plan = availablePlans.find(p => p.duration === value);
+                  if (plan?.inStock) {
+                    setSelectedDuration(value);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full" data-testid="select-duration">
+                  <SelectValue placeholder="Choose duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availablePlans.map((plan) => (
+                    <SelectItem
+                      key={plan.duration}
+                      value={plan.duration}
+                      disabled={!plan.inStock}
+                      data-testid={`option-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {plan.duration} {!plan.inStock && "(Out of Stock)"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Separator />
