@@ -188,14 +188,14 @@ export default function ProductDetails() {
         <Button
           variant="ghost"
           onClick={() => setLocation("/")}
-          className="mb-6 gap-2"
+          className="mb-6 gap-2 hidden md:flex"
           data-testid="button-back"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-16 lg:auto-rows-fr">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:auto-rows-fr">
           <div className="bg-white dark:bg-card rounded-md p-4 flex items-center justify-center border">
             <img
               src={product.image}
