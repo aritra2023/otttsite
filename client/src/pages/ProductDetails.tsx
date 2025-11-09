@@ -318,7 +318,7 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        <div className="space-y-3 mb-16">
+        <div className="space-y-3 mb-16 px-4 lg:px-0">
           <div>
             <h2 className="text-base font-bold mb-1.5">Product Description</h2>
             <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-description">
