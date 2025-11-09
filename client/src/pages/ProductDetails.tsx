@@ -205,7 +205,7 @@ export default function ProductDetails() {
             />
           </div>
 
-          <div className="space-y-3 bg-white dark:bg-white rounded-md p-3">
+          <div className="space-y-3 bg-white dark:bg-card rounded-md p-3">
             <div>
               <h1 className="text-xl md:text-2xl font-bold mb-2" data-testid="text-product-name">
                 {product.name}
