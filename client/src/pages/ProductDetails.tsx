@@ -105,7 +105,7 @@ export default function ProductDetails() {
   
   // Calculate final price with coupon
   const finalPrice = selectedPlan && couponApplied
-    ? Math.round(selectedPlan.sellingPrice * 0.9) // 10% off
+    ? Math.max(selectedPlan.sellingPrice - 10, 0) // ₹10 off
     : selectedPlan?.sellingPrice || 0;
   
   const discountPercentage = selectedPlan
@@ -119,11 +119,19 @@ export default function ProductDetails() {
   const features = product.description.split("\n").filter((f) => f.trim());
 
   const handleApplyCoupon = () => {
-    setCouponApplied(true);
-    toast({
-      title: "Coupon Applied!",
-      description: "You got 10% off on your order",
-    });
+    if (couponApplied) {
+      setCouponApplied(false);
+      toast({
+        title: "Coupon Removed",
+        description: "Coupon has been removed from your order",
+      });
+    } else {
+      setCouponApplied(true);
+      toast({
+        title: "Coupon Applied!",
+        description: "You got ₹10 off on your order",
+      });
+    }
   };
 
   const handleBuyNow = () => {
@@ -215,7 +223,7 @@ export default function ProductDetails() {
                   )}
                   {couponApplied && (
                     <Badge className="text-xs px-2 py-0.5 bg-green-500 text-white dark:bg-green-600" data-testid="badge-coupon">
-                      +10% OFF
+                      -₹10
                     </Badge>
                   )}
                 </div>
@@ -271,9 +279,9 @@ export default function ProductDetails() {
                 </div>
                 <Button
                   onClick={handleApplyCoupon}
-                  disabled={couponApplied}
+                  variant="ghost"
                   size="sm"
-                  className={`text-xs h-7 px-3 ${couponApplied ? 'bg-green-500 hover:bg-green-500' : ''}`}
+                  className="text-xs h-7 px-3"
                   data-testid="button-apply-coupon"
                 >
                   {couponApplied ? "Applied" : "Apply"}
