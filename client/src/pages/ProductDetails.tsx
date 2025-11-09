@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
@@ -21,6 +21,11 @@ export default function ProductDetails() {
   const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
