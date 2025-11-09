@@ -211,10 +211,14 @@ export default function ProductDetails() {
                 {availablePlans.map((plan) => (
                   <Button
                     key={plan.duration}
-                    variant={selectedDuration === plan.duration ? "default" : "outline"}
+                    variant="outline"
                     onClick={() => plan.inStock && setSelectedDuration(plan.duration)}
                     disabled={!plan.inStock}
-                    className="h-auto py-3 text-sm font-medium"
+                    className={`h-auto py-3 text-sm font-medium ${
+                      selectedDuration === plan.duration 
+                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700' 
+                        : ''
+                    }`}
                     data-testid={`button-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {plan.duration}
