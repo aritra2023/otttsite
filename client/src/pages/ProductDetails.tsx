@@ -245,7 +245,7 @@ export default function ProductDetails() {
                   }
                 }}
               >
-                <SelectTrigger className="w-full rounded-full border-2 border-black dark:border-white focus:ring-0" data-testid="select-duration">
+                <SelectTrigger className="w-full rounded-full bg-background dark:bg-card border border-border dark:border-border focus:ring-0" data-testid="select-duration">
                   <SelectValue placeholder="Choose duration" />
                 </SelectTrigger>
                 <SelectContent>
