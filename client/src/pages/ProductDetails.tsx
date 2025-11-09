@@ -211,16 +211,10 @@ export default function ProductDetails() {
                 {availablePlans.map((plan) => (
                   <Button
                     key={plan.duration}
+                    variant={selectedDuration === plan.duration ? "default" : "outline"}
                     onClick={() => plan.inStock && setSelectedDuration(plan.duration)}
                     disabled={!plan.inStock}
-                    className={`
-                      h-auto py-2 px-3 text-sm font-medium rounded-md
-                      ${selectedDuration === plan.duration 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-secondary text-secondary-foreground'
-                      }
-                      ${!plan.inStock ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
+                    className="h-auto py-3 text-sm font-medium"
                     data-testid={`button-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {plan.duration}
@@ -258,7 +252,7 @@ export default function ProductDetails() {
               </p>
             )}
 
-            <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-md p-3">
+            <div className="bg-orange-500/25 dark:bg-orange-500/25 border border-orange-500/25 dark:border-orange-500/25 rounded-md p-3">
               <div className="flex gap-2">
                 <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
                 <div className="space-y-0.5">
