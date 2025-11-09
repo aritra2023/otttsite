@@ -18,6 +18,7 @@ export default function ProductDetails() {
   const [, setLocation] = useLocation();
   const productId = params?.id;
   const [selectedDuration, setSelectedDuration] = useState<string>("");
+  const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -101,6 +102,12 @@ export default function ProductDetails() {
   }
 
   const selectedPlan = availablePlans.find((p) => p.duration === selectedDuration);
+  
+  // Calculate final price with coupon
+  const finalPrice = selectedPlan && couponApplied
+    ? Math.round(selectedPlan.sellingPrice * 0.9) // 10% off
+    : selectedPlan?.sellingPrice || 0;
+  
   const discountPercentage = selectedPlan
     ? Math.round(
         ((selectedPlan.actualPrice - selectedPlan.sellingPrice) /
@@ -110,6 +117,14 @@ export default function ProductDetails() {
     : 0;
 
   const features = product.description.split("\n").filter((f) => f.trim());
+
+  const handleApplyCoupon = () => {
+    setCouponApplied(true);
+    toast({
+      title: "Coupon Applied!",
+      description: "You got 10% off on your order",
+    });
+  };
 
   const handleBuyNow = () => {
     if (!selectedPlan || !selectedPlan.inStock) {
@@ -122,7 +137,7 @@ export default function ProductDetails() {
     }
 
     const message = encodeURIComponent(
-      `Hi! I want to buy ${product.name} ${selectedPlan.duration} subscription at ₹${selectedPlan.sellingPrice}`
+      `Hi! I want to buy ${product.name} ${selectedPlan.duration} subscription at ₹${finalPrice}`
     );
     window.open(`https://wa.me/919433419022?text=${message}`, "_blank");
   };
@@ -143,7 +158,7 @@ export default function ProductDetails() {
       duration: selectedPlan.duration,
       months: selectedPlan.months,
       originalPrice: selectedPlan.actualPrice,
-      discountedPrice: selectedPlan.sellingPrice,
+      discountedPrice: finalPrice,
     });
 
     toast({
@@ -186,7 +201,7 @@ export default function ProductDetails() {
               {selectedPlan && (
                 <div className="flex items-baseline gap-2 flex-wrap mb-2">
                   <span className="text-xl md:text-2xl font-bold" data-testid="text-price">
-                    ₹{selectedPlan.sellingPrice}
+                    ₹{finalPrice}
                   </span>
                   {selectedPlan.actualPrice > selectedPlan.sellingPrice && (
                     <>
@@ -197,6 +212,11 @@ export default function ProductDetails() {
                         {discountPercentage}% OFF
                       </Badge>
                     </>
+                  )}
+                  {couponApplied && (
+                    <Badge className="text-xs px-2 py-0.5 bg-green-500 text-white dark:bg-green-600" data-testid="badge-coupon">
+                      +10% OFF
+                    </Badge>
                   )}
                 </div>
               )}
@@ -236,17 +256,28 @@ export default function ProductDetails() {
             </div>
 
             <div className="bg-orange-500/25 dark:bg-orange-500/25 border border-orange-500/25 dark:border-orange-500/25 rounded-md p-3">
-              <div className="flex gap-2">
-                <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
-                <div className="space-y-0.5">
-                  <p className="font-semibold text-xs">Special Offer</p>
-                  <p className="text-xs text-muted-foreground">
-                    Get 5% off on orders above ₹50
-                  </p>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    Code: <span className="font-bold">TRYWEBEW00</span>
-                  </p>
+              <div className="flex gap-2 justify-between items-start">
+                <div className="flex gap-2">
+                  <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-xs">Special Offer</p>
+                    <p className="text-xs text-muted-foreground">
+                      Get 10% off on first order
+                    </p>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Code: <span className="font-bold">TRYSUBFLIX</span>
+                    </p>
+                  </div>
                 </div>
+                <Button
+                  onClick={handleApplyCoupon}
+                  disabled={couponApplied}
+                  size="sm"
+                  className={`text-xs h-7 px-3 ${couponApplied ? 'bg-green-500 hover:bg-green-500' : ''}`}
+                  data-testid="button-apply-coupon"
+                >
+                  {couponApplied ? "Applied" : "Apply"}
+                </Button>
               </div>
             </div>
 
