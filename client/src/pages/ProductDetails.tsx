@@ -217,7 +217,7 @@ export default function ProductDetails() {
                   }
                 }}
               >
-                <SelectTrigger className="w-full" data-testid="select-duration">
+                <SelectTrigger className="w-full rounded-full" data-testid="select-duration">
                   <SelectValue placeholder="Choose duration" />
                 </SelectTrigger>
                 <SelectContent>
@@ -235,7 +235,20 @@ export default function ProductDetails() {
               </Select>
             </div>
 
-            <Separator />
+            <div className="bg-orange-500/25 dark:bg-orange-500/25 border border-orange-500/25 dark:border-orange-500/25 rounded-md p-3">
+              <div className="flex gap-2">
+                <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-xs">Special Offer</p>
+                  <p className="text-xs text-muted-foreground">
+                    Get 5% off on orders above ₹50
+                  </p>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Code: <span className="font-bold">TRYWEBEW00</span>
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div className="flex gap-2">
               <Button
@@ -263,21 +276,6 @@ export default function ProductDetails() {
                 This variant is currently out of stock
               </p>
             )}
-
-            <div className="bg-orange-500/25 dark:bg-orange-500/25 border border-orange-500/25 dark:border-orange-500/25 rounded-md p-3">
-              <div className="flex gap-2">
-                <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
-                <div className="space-y-0.5">
-                  <p className="font-semibold text-xs">Special Offer</p>
-                  <p className="text-xs text-muted-foreground">
-                    Get 5% off on orders above ₹50
-                  </p>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    Code: <span className="font-bold">TRYWEBEW00</span>
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
