@@ -166,8 +166,8 @@ export default function ProductDetails() {
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-12">
-          <div className="lg:sticky lg:top-20 h-fit">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
+          <div>
             <div className="bg-white dark:bg-card rounded-md p-6 flex items-center justify-center border">
               <img
                 src={product.image}
@@ -271,51 +271,49 @@ export default function ProductDetails() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <Separator />
+        <div className="space-y-4 mb-12">
+          <div>
+            <h2 className="text-lg font-bold mb-2">Product Description</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-description">
+              Save big with our {product.name} plans, affordable, reliable, and perfect for
+              unlimited streaming of movies, shows, and originals every month.
+            </p>
+          </div>
 
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-lg font-bold mb-2">Product Description</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-description">
-                  Save big with our {product.name} plans, affordable, reliable, and perfect for
-                  unlimited streaming of movies, shows, and originals every month.
-                </p>
-              </div>
+          <Separator />
 
-              <Separator />
+          <div>
+            <h2 className="text-lg font-bold mb-2">Key Features</h2>
+            <ul className="space-y-1.5">
+              {features.map((feature, idx) => (
+                <li key={idx} className="flex gap-2 text-sm text-muted-foreground">
+                  <span className="text-primary font-bold mt-0.5">•</span>
+                  <span data-testid={`text-feature-${idx}`}>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-              <div>
-                <h2 className="text-lg font-bold mb-2">Key Features</h2>
-                <ul className="space-y-1.5">
-                  {features.map((feature, idx) => (
-                    <li key={idx} className="flex gap-2 text-sm text-muted-foreground">
-                      <span className="text-primary font-bold mt-0.5">•</span>
-                      <span data-testid={`text-feature-${idx}`}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <Separator />
 
-              <Separator />
+          <div className="space-y-3">
+            <div>
+              <h3 className="text-base font-bold mb-1.5">Q: Will the subscription be activated on my number or Gmail?</h3>
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
+                login, not an activation on your personal email or phone.
+              </p>
+            </div>
 
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-base font-bold mb-1.5">Q: Will the subscription be activated on my number or Gmail?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
-                    login, not an activation on your personal email or phone.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-base font-bold mb-1.5">Q: How will I get my login credentials?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
-                    secure {product.name} details.
-                  </p>
-                </div>
-              </div>
+            <div>
+              <h3 className="text-base font-bold mb-1.5">Q: How will I get my login credentials?</h3>
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
+                secure {product.name} details.
+              </p>
             </div>
           </div>
         </div>
