@@ -176,7 +176,7 @@ export default function ProductDetails() {
             />
           </div>
 
-          <div className="space-y-3 bg-card rounded-md p-4 border">
+          <div className="space-y-3 bg-white dark:bg-white rounded-md p-4">
             <div>
               <h1 className="text-xl md:text-2xl font-bold mb-2" data-testid="text-product-name">
                 {product.name}
@@ -214,7 +214,7 @@ export default function ProductDetails() {
                     onClick={() => plan.inStock && setSelectedDuration(plan.duration)}
                     disabled={!plan.inStock}
                     className={`
-                      h-auto py-2 px-3 text-sm font-medium rounded-full
+                      h-auto py-2 px-3 text-sm font-medium rounded-md
                       ${selectedDuration === plan.duration 
                         ? 'bg-primary text-primary-foreground' 
                         : 'bg-secondary text-secondary-foreground'
