@@ -226,11 +226,6 @@ export default function ProductDetails() {
                       </Badge>
                     </>
                   )}
-                  {couponApplied && (
-                    <Badge className="text-xs px-2 py-0.5 bg-green-500 text-white dark:bg-green-600" data-testid="badge-coupon">
-                      -₹10
-                    </Badge>
-                  )}
                 </div>
               )}
             </div>
@@ -250,7 +245,7 @@ export default function ProductDetails() {
                   }
                 }}
               >
-                <SelectTrigger className="w-full rounded-full" data-testid="select-duration">
+                <SelectTrigger className="w-full rounded-full border-0 focus:ring-0" data-testid="select-duration">
                   <SelectValue placeholder="Choose duration" />
                 </SelectTrigger>
                 <SelectContent>
@@ -286,10 +281,10 @@ export default function ProductDetails() {
                   onClick={handleApplyCoupon}
                   variant="ghost"
                   size="sm"
-                  className="text-xs h-7 px-3 no-default-hover-elevate"
+                  className="text-xs h-7 px-3 no-default-hover-elevate no-default-active-elevate"
                   data-testid="button-apply-coupon"
                 >
-                  {couponApplied ? "Applied" : "Apply"}
+                  {couponApplied ? "Remove" : "Apply"}
                 </Button>
               </div>
             </div>
