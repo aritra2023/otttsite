@@ -166,35 +166,35 @@ export default function ProductDetails() {
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          <div className="lg:sticky lg:top-24 h-fit">
-            <div className="bg-white dark:bg-card rounded-lg p-8 md:p-12 flex items-center justify-center border">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-12">
+          <div className="lg:sticky lg:top-20 h-fit">
+            <div className="bg-white dark:bg-card rounded-md p-6 flex items-center justify-center border">
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full max-w-sm h-auto object-contain"
+                className="w-full max-w-xs h-auto object-contain"
                 data-testid="img-product"
               />
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-3" data-testid="text-product-name">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2" data-testid="text-product-name">
                 {product.name}
               </h1>
               
               {selectedPlan && (
-                <div className="flex items-baseline gap-3 flex-wrap mb-4">
-                  <span className="text-4xl font-bold" data-testid="text-price">
+                <div className="flex items-baseline gap-2 flex-wrap mb-3">
+                  <span className="text-2xl md:text-3xl font-bold" data-testid="text-price">
                     ₹{selectedPlan.sellingPrice}
                   </span>
                   {selectedPlan.actualPrice > selectedPlan.sellingPrice && (
                     <>
-                      <span className="text-xl text-muted-foreground line-through" data-testid="text-original-price">
+                      <span className="text-lg text-muted-foreground line-through" data-testid="text-original-price">
                         ₹{selectedPlan.actualPrice}
                       </span>
-                      <Badge className="text-sm px-3 py-1 bg-green-600 hover:bg-green-700" data-testid="badge-discount">
+                      <Badge className="text-xs px-2 py-0.5 bg-orange-500/20 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 border border-orange-300 dark:border-orange-700" data-testid="badge-discount">
                         {discountPercentage}% OFF
                       </Badge>
                     </>
@@ -205,40 +205,35 @@ export default function ProductDetails() {
 
             <Separator />
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-base">Duration:</span>
-                <span className="text-sm text-muted-foreground">{selectedPlan?.months || 0} Month{selectedPlan && selectedPlan.months !== 1 ? 's' : ''}</span>
+                <span className="font-semibold text-sm">Select Duration:</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 {availablePlans.map((plan) => (
-                  <button
+                  <Button
                     key={plan.duration}
                     onClick={() => plan.inStock && setSelectedDuration(plan.duration)}
                     disabled={!plan.inStock}
+                    variant={selectedDuration === plan.duration ? "default" : "outline"}
                     className={`
-                      px-4 py-3 rounded-md border-2 transition-all font-medium text-sm
-                      ${selectedDuration === plan.duration
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border hover:border-primary/50'
-                      }
-                      ${!plan.inStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      h-auto py-2.5 px-3 text-sm font-medium rounded-full
+                      ${!plan.inStock ? 'opacity-50 cursor-not-allowed' : ''}
                     `}
                     data-testid={`button-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {plan.duration}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
 
             <Separator />
 
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Button
                 onClick={handleBuyNow}
-                size="lg"
-                className="flex-1 text-base h-12 bg-primary hover:bg-primary/90"
+                className="flex-1 text-sm h-10 rounded-full bg-primary hover:bg-primary/90"
                 disabled={!selectedPlan?.inStock}
                 data-testid="button-buy-now"
               >
@@ -246,47 +241,43 @@ export default function ProductDetails() {
               </Button>
               <Button
                 onClick={handleAddToCart}
-                size="lg"
                 variant="outline"
-                className="flex-1 text-base h-12 gap-2"
+                className="flex-1 text-sm h-10 rounded-full gap-2"
                 disabled={!selectedPlan?.inStock}
                 data-testid="button-add-to-cart"
               >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-4 w-4" />
                 Add to Cart
               </Button>
             </div>
 
             {!selectedPlan?.inStock && (
-              <p className="text-sm text-destructive font-medium" data-testid="text-out-of-stock">
+              <p className="text-xs text-destructive font-medium" data-testid="text-out-of-stock">
                 This variant is currently out of stock
               </p>
             )}
 
-            <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-md p-4">
-              <div className="flex gap-3">
-                <Tag className="h-5 w-5 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
-                <div className="space-y-1">
-                  <p className="font-semibold text-sm">Offers</p>
-                  <p className="text-sm text-muted-foreground">
+            <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-md p-3">
+              <div className="flex gap-2">
+                <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-xs">Special Offer</p>
+                  <p className="text-xs text-muted-foreground">
                     Get 5% off on orders above ₹50
                   </p>
                   <p className="text-xs text-muted-foreground font-medium">
-                    Use code: <span className="font-bold">TRYWEBEW00</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground italic">
-                    *Coupons can be applied at checkout
+                    Code: <span className="font-bold">TRYWEBEW00</span>
                   </p>
                 </div>
               </div>
             </div>
 
-            <Separator className="my-6" />
+            <Separator />
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-bold mb-3">Product Description</h2>
-                <p className="text-muted-foreground leading-relaxed" data-testid="text-description">
+                <h2 className="text-lg font-bold mb-2">Product Description</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-description">
                   Save big with our {product.name} plans, affordable, reliable, and perfect for
                   unlimited streaming of movies, shows, and originals every month.
                 </p>
@@ -295,11 +286,11 @@ export default function ProductDetails() {
               <Separator />
 
               <div>
-                <h2 className="text-xl font-bold mb-3">Interruptions-Free Streaming</h2>
-                <ul className="space-y-2">
+                <h2 className="text-lg font-bold mb-2">Key Features</h2>
+                <ul className="space-y-1.5">
                   {features.map((feature, idx) => (
-                    <li key={idx} className="flex gap-2 text-muted-foreground">
-                      <span className="text-primary font-bold mt-1">•</span>
+                    <li key={idx} className="flex gap-2 text-sm text-muted-foreground">
+                      <span className="text-primary font-bold mt-0.5">•</span>
                       <span data-testid={`text-feature-${idx}`}>{feature}</span>
                     </li>
                   ))}
@@ -308,18 +299,22 @@ export default function ProductDetails() {
 
               <Separator />
 
-              <div>
-                <h2 className="text-xl font-bold mb-4">Q: Will the subscription be activated on my number or Gmail?</h2>
-                <p className="text-muted-foreground mb-6">
-                  <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
-                  login, not an activation on your personal email or phone.
-                </p>
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-base font-bold mb-1.5">Q: Will the subscription be activated on my number or Gmail?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
+                    login, not an activation on your personal email or phone.
+                  </p>
+                </div>
 
-                <h2 className="text-xl font-bold mb-4">Q: How will I get my login credentials?</h2>
-                <p className="text-muted-foreground">
-                  <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
-                  secure {product.name} details.
-                </p>
+                <div>
+                  <h3 className="text-base font-bold mb-1.5">Q: How will I get my login credentials?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
+                    secure {product.name} details.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
