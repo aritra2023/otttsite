@@ -216,8 +216,8 @@ export default function ProductDetails() {
                     disabled={!plan.inStock}
                     className={`h-auto py-3 text-sm font-medium ${
                       selectedDuration === plan.duration 
-                        ? 'bg-orange-100 text-black border-orange-300 hover:bg-orange-200 dark:bg-orange-100 dark:text-black dark:hover:bg-orange-200' 
-                        : ''
+                        ? 'bg-orange-500/25 text-black border-orange-500/25 hover:bg-orange-500/30 dark:bg-orange-500/25 dark:text-black dark:hover:bg-orange-500/30' 
+                        : 'text-gray-500 dark:text-gray-400'
                     }`}
                     data-testid={`button-duration-${plan.duration.toLowerCase().replace(/\s+/g, '-')}`}
                   >
