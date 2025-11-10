@@ -278,7 +278,7 @@ export default function ProductDetails() {
                   </p>
                   <button
                     onClick={handleCopyCode}
-                    className="text-xs text-orange-600 dark:text-orange-500 mt-0.5 font-medium hover:underline cursor-pointer"
+                    className="text-xs text-orange-600 dark:text-orange-500 mt-0.5 font-medium cursor-pointer"
                     data-testid="button-copy-code"
                   >
                     Tap to Copy
