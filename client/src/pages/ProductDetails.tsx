@@ -223,10 +223,10 @@ export default function ProductDetails() {
           <div className="bg-white dark:bg-card rounded-md p-4 flex items-center justify-center border relative">
             <button
               onClick={handleShare}
-              className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover-elevate active-elevate-2"
+              className="absolute top-2 right-2 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover-elevate active-elevate-2 z-10"
               data-testid="button-share"
             >
-              <Share2 className="h-4 w-4" />
+              <Share2 className="h-5 w-5" />
             </button>
             <img
               src={product.image}
