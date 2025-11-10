@@ -13,6 +13,14 @@ export const customPricingOptionSchema = z.object({
 
 export type CustomPricingOption = z.infer<typeof customPricingOptionSchema>;
 
+export const faqSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  answer: z.string(),
+});
+
+export type FAQ = z.infer<typeof faqSchema>;
+
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
@@ -33,6 +41,8 @@ export const products = pgTable("products", {
   name: text("name").notNull(),
   image: text("image").notNull(),
   description: text("description").notNull(),
+  keyFeatures: text("key_features").notNull().default(""),
+  productDescription: text("product_description").notNull().default(""),
   price1MonthActual: integer("price_1_month_actual").notNull(),
   price1MonthSelling: integer("price_1_month_selling").notNull(),
   inStock1Month: boolean("in_stock_1_month").notNull().default(true),
@@ -46,6 +56,7 @@ export const products = pgTable("products", {
   price12MonthSelling: integer("price_12_month_selling").notNull(),
   inStock12Month: boolean("in_stock_12_month").notNull().default(true),
   customOptions: jsonb("custom_options").$type<CustomPricingOption[]>().default(sql`'[]'::jsonb`),
+  faqs: jsonb("faqs").$type<FAQ[]>().default(sql`'[]'::jsonb`),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({

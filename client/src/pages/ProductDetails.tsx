@@ -116,7 +116,8 @@ export default function ProductDetails() {
       )
     : 0;
 
-  const features = product.description.split("\n").filter((f) => f.trim());
+  const features = (product.keyFeatures || product.description).split("\n").filter((f) => f.trim());
+  const faqs = product.faqs || [];
 
   const handleCopyCode = async () => {
     try {
@@ -317,15 +318,17 @@ export default function ProductDetails() {
         </div>
 
         <div className="space-y-4 mb-16 px-3 lg:px-0">
-          <div>
-            <h2 className="text-base font-bold mb-3">Product Description</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-description">
-              Save big with our {product.name} plans, affordable, reliable, and perfect for
-              unlimited streaming of movies, shows, and originals every month.
-            </p>
-          </div>
-
-          <Separator />
+          {product.productDescription && (
+            <>
+              <div>
+                <h2 className="text-base font-bold mb-3">Product Description</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line" data-testid="text-description">
+                  {product.productDescription}
+                </p>
+              </div>
+              <Separator />
+            </>
+          )}
 
           <div>
             <h2 className="text-base font-bold mb-3">Key Features</h2>
@@ -339,25 +342,23 @@ export default function ProductDetails() {
             </ul>
           </div>
 
-          <Separator />
-
-          <div className="space-y-3">
-            <div>
-              <h3 className="text-sm font-bold mb-2">Q: Will the subscription be activated on my number or Gmail?</h3>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
-                login, not an activation on your personal email or phone.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-bold mb-2">Q: How will I get my login credentials?</h3>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
-                secure {product.name} details.
-              </p>
-            </div>
-          </div>
+          {faqs.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-3">
+                {faqs.map((faq, idx) => (
+                  <div key={faq.id}>
+                    <h3 className="text-sm font-bold mb-2" data-testid={`text-faq-question-${idx}`}>
+                      Q: {faq.question}
+                    </h3>
+                    <p className="text-sm text-muted-foreground whitespace-pre-line" data-testid={`text-faq-answer-${idx}`}>
+                      <span className="font-semibold">A:</span> {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* More in Category Section */}

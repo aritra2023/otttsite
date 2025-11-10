@@ -25,7 +25,9 @@ const productFormSchema = z.object({
   category: z.string().min(1, "Category is required"),
   name: z.string().min(1, "Product name is required"),
   image: z.string().url("Must be a valid URL"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
+  description: z.string().min(10, "Key features must be at least 10 characters"),
+  keyFeatures: z.string().min(10, "Key features must be at least 10 characters"),
+  productDescription: z.string().min(10, "Product description must be at least 10 characters"),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -36,6 +38,12 @@ interface CustomOption {
   actualPrice: number;
   sellingPrice: number;
   inStock?: boolean;
+}
+
+interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
 }
 
 interface ProductFormProps {
@@ -49,17 +57,23 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
   const [customOptions, setCustomOptions] = useState<CustomOption[]>(
     product?.customOptions || []
   );
+  const [faqs, setFaqs] = useState<FAQItem[]>(
+    product?.faqs || []
+  );
 
   useEffect(() => {
     const filteredOptions = (product?.customOptions || []).filter(
       opt => opt.actualPrice > 0 && opt.sellingPrice > 0
     );
     setCustomOptions(filteredOptions);
+    setFaqs(product?.faqs || []);
     form.reset({
       category: product?.category || "Subscriptions",
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
+      keyFeatures: product?.keyFeatures || product?.description || "",
+      productDescription: product?.productDescription || "",
     });
   }, [product]);
 
@@ -70,6 +84,8 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       name: product?.name || "",
       image: product?.image || "",
       description: product?.description || "",
+      keyFeatures: product?.keyFeatures || product?.description || "",
+      productDescription: product?.productDescription || "",
     },
   });
 
@@ -79,7 +95,9 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         category: data.category,
         name: data.name,
         image: data.image,
-        description: data.description,
+        description: data.keyFeatures,
+        keyFeatures: data.keyFeatures,
+        productDescription: data.productDescription,
         price1MonthActual: 0,
         price1MonthSelling: 0,
         inStock1Month: false,
@@ -100,6 +118,13 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             actualPrice: opt.actualPrice,
             sellingPrice: opt.sellingPrice,
             inStock: opt.inStock !== undefined ? opt.inStock : true,
+          })),
+        faqs: faqs
+          .filter(faq => faq.question.trim() && faq.answer.trim())
+          .map(faq => ({
+            id: faq.id,
+            question: faq.question,
+            answer: faq.answer,
           })),
       };
 
@@ -149,6 +174,27 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
     setCustomOptions(
       customOptions.map(opt =>
         opt.id === id ? { ...opt, [field]: value } : opt
+      )
+    );
+  };
+
+  const addFAQ = () => {
+    const newFAQ: FAQItem = {
+      id: `faq-${Date.now()}`,
+      question: "",
+      answer: "",
+    };
+    setFaqs([...faqs, newFAQ]);
+  };
+
+  const removeFAQ = (id: string) => {
+    setFaqs(faqs.filter(faq => faq.id !== id));
+  };
+
+  const updateFAQ = (id: string, field: keyof FAQItem, value: string) => {
+    setFaqs(
+      faqs.map(faq =>
+        faq.id === id ? { ...faq, [field]: value } : faq
       )
     );
   };
@@ -226,15 +272,37 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
         <FormField
           control={form.control}
-          name="description"
+          name="keyFeatures"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Key Features</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe the product features and benefits..."
+                  placeholder="Enter key features (one per line)..."
                   className="min-h-[100px]"
-                  data-testid="input-description"
+                  data-testid="input-key-features"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Enter each feature on a new line
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="productDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Enter a detailed product description..."
+                  className="min-h-[100px]"
+                  data-testid="input-product-description"
                   {...field}
                 />
               </FormControl>
@@ -309,6 +377,60 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                   size="sm"
                   onClick={() => removeCustomOption(option.id)}
                   data-testid={`button-remove-option-${index}`}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <span className="ml-1 text-xs">Remove</span>
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold">Questions & Answers</h3>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addFAQ}
+              data-testid="button-add-faq"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Add Question
+            </Button>
+          </div>
+
+          {faqs.map((faq, index) => (
+            <div key={faq.id} className="border rounded-lg p-3 mb-3 bg-muted/30">
+              <div className="space-y-2">
+                <div>
+                  <Label className="text-xs mb-1 block">Question</Label>
+                  <Input
+                    placeholder="e.g., How will I get my login credentials?"
+                    value={faq.question}
+                    onChange={(e) => updateFAQ(faq.id, "question", e.target.value)}
+                    data-testid={`input-faq-question-${index}`}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs mb-1 block">Answer</Label>
+                  <Textarea
+                    placeholder="Enter the answer..."
+                    value={faq.answer}
+                    onChange={(e) => updateFAQ(faq.id, "answer", e.target.value)}
+                    className="min-h-[60px]"
+                    data-testid={`input-faq-answer-${index}`}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end mt-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeFAQ(faq.id)}
+                  data-testid={`button-remove-faq-${index}`}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                   <span className="ml-1 text-xs">Remove</span>
