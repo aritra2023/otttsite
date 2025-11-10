@@ -340,51 +340,6 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Trust Badges Section */}
-        <div className="mb-8 px-3 lg:px-0">
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 py-6 bg-muted/30 rounded-lg">
-            {/* Google Trusted Store */}
-            <div className="flex items-center gap-2">
-              <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="20" fill="#4285F4"/>
-                <path d="M20 26l-4-4-2 2 6 6 12-12-2-2z" fill="white"/>
-              </svg>
-              <div>
-                <p className="text-sm font-bold text-foreground">Google</p>
-                <p className="text-xs text-muted-foreground">Trusted Store</p>
-              </div>
-            </div>
-
-            {/* MSME Badge */}
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Ministry of MSME</p>
-                <p className="text-xs font-bold text-foreground">Govt. of India</p>
-              </div>
-            </div>
-
-            {/* Trustpilot */}
-            <div className="flex items-center gap-2">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                ))}
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground">4.7/5.0</p>
-                <p className="text-xs text-muted-foreground">( 1,437 Ratings )</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* More in Category Section */}
         <div className="mb-12 px-3 lg:px-0">
           <h2 className="text-xl font-bold mb-4">More in category</h2>
@@ -399,7 +354,7 @@ export default function ProductDetails() {
                   className="flex-shrink-0 w-40 group"
                   data-testid={`related-product-${relatedProduct.id}`}
                 >
-                  <div className="bg-white dark:bg-card rounded-lg p-4 transition-all border border-border hover:border-primary/50 hover:scale-105 hover-elevate">
+                  <div className="bg-white dark:bg-card rounded-lg p-4 transition-all border border-border hover:border-primary/50 hover-elevate">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-20 h-20 rounded-lg bg-background flex items-center justify-center overflow-hidden">
                         <img
