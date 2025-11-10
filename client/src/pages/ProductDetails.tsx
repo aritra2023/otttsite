@@ -118,6 +118,22 @@ export default function ProductDetails() {
 
   const features = product.description.split("\n").filter((f) => f.trim());
 
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText("TRYSUBFLIX");
+      toast({
+        title: "Copied!",
+        description: "Coupon code copied to clipboard",
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please copy the code manually",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleBuyNow = () => {
     if (!selectedPlan || !selectedPlan.inStock) {
       toast({
@@ -260,9 +276,13 @@ export default function ProductDetails() {
                   <p className="text-sm font-bold text-orange-600 dark:text-orange-500 tracking-wider">
                     TRYSUBFLIX
                   </p>
-                  <p className="text-xs text-orange-600 dark:text-orange-500 mt-0.5 font-medium">
-                    Apply on WP
-                  </p>
+                  <button
+                    onClick={handleCopyCode}
+                    className="text-xs text-orange-600 dark:text-orange-500 mt-0.5 font-medium hover:underline cursor-pointer"
+                    data-testid="button-copy-code"
+                  >
+                    Tap to Copy
+                  </button>
                 </div>
               </div>
             </div>
