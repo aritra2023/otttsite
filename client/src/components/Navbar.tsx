@@ -364,7 +364,6 @@ export default function Navbar({ onSearch }: NavbarProps) {
                             </div>
                             <div className="text-center">
                               <p className="text-sm font-semibold line-clamp-2">{product.name}</p>
-                              <p className="text-xs text-muted-foreground mt-1">₹{product.price1MonthSelling}/mo</p>
                             </div>
                           </div>
                         </div>

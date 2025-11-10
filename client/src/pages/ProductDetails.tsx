@@ -18,7 +18,6 @@ export default function ProductDetails() {
   const [, setLocation] = useLocation();
   const productId = params?.id;
   const [selectedDuration, setSelectedDuration] = useState<string>("");
-  const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -107,11 +106,7 @@ export default function ProductDetails() {
   }
 
   const selectedPlan = availablePlans.find((p) => p.duration === selectedDuration);
-  
-  // Calculate final price with coupon
-  const finalPrice = selectedPlan && couponApplied
-    ? Math.max(selectedPlan.sellingPrice - 10, 0) // ₹10 off
-    : selectedPlan?.sellingPrice || 0;
+  const finalPrice = selectedPlan?.sellingPrice || 0;
   
   const discountPercentage = selectedPlan
     ? Math.round(
@@ -122,22 +117,6 @@ export default function ProductDetails() {
     : 0;
 
   const features = product.description.split("\n").filter((f) => f.trim());
-
-  const handleApplyCoupon = () => {
-    if (couponApplied) {
-      setCouponApplied(false);
-      toast({
-        title: "Coupon Removed",
-        description: "Coupon has been removed from your order",
-      });
-    } else {
-      setCouponApplied(true);
-      toast({
-        title: "Coupon Applied!",
-        description: "You got ₹10 off on your order",
-      });
-    }
-  };
 
   const handleBuyNow = () => {
     if (!selectedPlan || !selectedPlan.inStock) {
@@ -263,10 +242,7 @@ export default function ProductDetails() {
               </Select>
             </div>
 
-            <div 
-              className="relative bg-gradient-to-r from-orange-500/20 to-orange-600/20 dark:from-orange-500/25 dark:to-orange-600/25 rounded-lg border-2 border-dashed border-orange-500/50 dark:border-orange-500/40 p-4 cursor-pointer transition-all hover-elevate active-elevate-2" 
-              onClick={handleApplyCoupon}
-            >
+            <div className="relative bg-gradient-to-r from-orange-500/20 to-orange-600/20 dark:from-orange-500/25 dark:to-orange-600/25 rounded-lg border-2 border-dashed border-orange-500/50 dark:border-orange-500/40 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex gap-3 items-center flex-1">
                   <div className="bg-orange-500/30 dark:bg-orange-500/30 p-2 rounded-full">
@@ -284,8 +260,8 @@ export default function ProductDetails() {
                   <p className="text-sm font-bold text-orange-600 dark:text-orange-500 tracking-wider">
                     TRYSUBFLIX
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {couponApplied ? "✓ Applied" : "Tap to apply"}
+                  <p className="text-xs text-orange-600 dark:text-orange-500 mt-0.5 font-medium">
+                    Apply on WP
                   </p>
                 </div>
               </div>
@@ -361,6 +337,47 @@ export default function ProductDetails() {
                 secure {product.name} details.
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* More in Category Section */}
+        <div className="mb-12 px-3 lg:px-0">
+          <h2 className="text-xl font-bold mb-4">More in Category</h2>
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+            {products
+              .filter((p) => p.id !== productId && p.category === product.category)
+              .slice(0, 10)
+              .map((relatedProduct) => (
+                <button
+                  key={relatedProduct.id}
+                  onClick={() => setLocation(`/product/${relatedProduct.id}`)}
+                  className="flex-shrink-0 w-40 group"
+                  data-testid={`related-product-${relatedProduct.id}`}
+                >
+                  <div className="bg-white dark:bg-card rounded-lg p-4 transition-all border border-border hover:border-primary/50 hover:scale-105 hover-elevate">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-20 h-20 rounded-lg bg-background flex items-center justify-center overflow-hidden">
+                        <img
+                          src={relatedProduct.image}
+                          alt={relatedProduct.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <div className="text-center w-full">
+                        <p className="text-sm font-semibold line-clamp-2 mb-1">
+                          {relatedProduct.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Starting from
+                        </p>
+                        <p className="text-sm font-bold text-primary">
+                          ₹{relatedProduct.price1MonthSelling}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
           </div>
         </div>
       </div>
