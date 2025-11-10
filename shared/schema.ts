@@ -42,7 +42,7 @@ export const products = pgTable("products", {
   image: text("image").notNull(),
   description: text("description").notNull(),
   keyFeatures: text("key_features").notNull().default(""),
-  productDescription: text("product_description").notNull().default(""),
+  productDescription: text("product_description").default(""),
   price1MonthActual: integer("price_1_month_actual").notNull(),
   price1MonthSelling: integer("price_1_month_selling").notNull(),
   inStock1Month: boolean("in_stock_1_month").notNull().default(true),

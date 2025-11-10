@@ -27,7 +27,7 @@ const productFormSchema = z.object({
   image: z.string().url("Must be a valid URL"),
   description: z.string().min(10, "Key features must be at least 10 characters"),
   keyFeatures: z.string().min(10, "Key features must be at least 10 characters"),
-  productDescription: z.string().min(10, "Product description must be at least 10 characters"),
+  productDescription: z.string().optional(),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -62,18 +62,25 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
   );
 
   useEffect(() => {
+    if (!product) return;
+    
     const filteredOptions = (product?.customOptions || []).filter(
       opt => opt.actualPrice > 0 && opt.sellingPrice > 0
     );
     setCustomOptions(filteredOptions);
     setFaqs(product?.faqs || []);
+    
+    // Migrate old description to keyFeatures if keyFeatures doesn't exist
+    const keyFeaturesValue = product.keyFeatures || product.description || "";
+    const productDescValue = product.productDescription || "";
+    
     form.reset({
-      category: product?.category || "Subscriptions",
-      name: product?.name || "",
-      image: product?.image || "",
-      description: product?.description || "",
-      keyFeatures: product?.keyFeatures || product?.description || "",
-      productDescription: product?.productDescription || "",
+      category: product.category || "Subscriptions",
+      name: product.name || "",
+      image: product.image || "",
+      description: keyFeaturesValue,
+      keyFeatures: keyFeaturesValue,
+      productDescription: productDescValue,
     });
   }, [product]);
 
@@ -97,7 +104,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         image: data.image,
         description: data.keyFeatures,
         keyFeatures: data.keyFeatures,
-        productDescription: data.productDescription,
+        productDescription: data.productDescription || "",
         price1MonthActual: 0,
         price1MonthSelling: 0,
         inStock1Month: false,
