@@ -184,7 +184,7 @@ export default function ProductDetails() {
     <div className="min-h-screen bg-background">
       <Navbar onSearch={() => {}} />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 md:py-8">
         <Button
           variant="ghost"
           onClick={() => setLocation("/")}
@@ -195,7 +195,7 @@ export default function ProductDetails() {
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:auto-rows-fr">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 lg:auto-rows-fr">
           <div className="bg-white dark:bg-card rounded-md p-4 flex items-center justify-center border">
             <img
               src={product.image}
@@ -205,14 +205,14 @@ export default function ProductDetails() {
             />
           </div>
 
-          <div className="space-y-3 bg-white dark:bg-card rounded-md p-3">
+          <div className="space-y-4 bg-white dark:bg-card rounded-md p-4">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold mb-2" data-testid="text-product-name">
+              <h1 className="text-xl md:text-2xl font-bold mb-3" data-testid="text-product-name">
                 {product.name}
               </h1>
               
               {selectedPlan && (
-                <div className="flex items-baseline gap-2 flex-wrap mb-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="text-xl md:text-2xl font-bold" data-testid="text-price">
                     ₹{finalPrice}
                   </span>
@@ -232,7 +232,7 @@ export default function ProductDetails() {
 
             <Separator />
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-sm">Select Duration:</span>
               </div>
@@ -263,33 +263,35 @@ export default function ProductDetails() {
               </Select>
             </div>
 
-            <div className="bg-orange-500/25 dark:bg-orange-500/25 rounded-md p-3">
-              <div className="flex gap-2 justify-between items-start">
-                <div className="flex gap-2">
-                  <Tag className="h-4 w-4 text-orange-600 dark:text-orange-500 mt-0.5 flex-shrink-0" />
-                  <div className="space-y-0.5">
-                    <p className="font-semibold text-xs">Special Offer</p>
-                    <p className="text-xs text-muted-foreground">
-                      Get 10% off on first order
-                    </p>
-                    <p className="text-xs text-muted-foreground font-medium">
-                      Code: <span className="font-bold">TRYSUBFLIX</span>
+            <div 
+              className="relative bg-gradient-to-r from-orange-500/20 to-orange-600/20 dark:from-orange-500/25 dark:to-orange-600/25 rounded-lg border-2 border-dashed border-orange-500/50 dark:border-orange-500/40 p-4 cursor-pointer transition-all hover-elevate active-elevate-2" 
+              onClick={handleApplyCoupon}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex gap-3 items-center flex-1">
+                  <div className="bg-orange-500/30 dark:bg-orange-500/30 p-2 rounded-full">
+                    <Tag className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-sm text-orange-700 dark:text-orange-400">Special Offer</p>
+                    <p className="text-lg font-bold text-orange-600 dark:text-orange-500">
+                      ₹10 OFF
                     </p>
                   </div>
                 </div>
-                <Button
-                  onClick={handleApplyCoupon}
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs h-7 px-3 no-default-hover-elevate no-default-active-elevate"
-                  data-testid="button-apply-coupon"
-                >
-                  {couponApplied ? "Remove" : "Apply"}
-                </Button>
+                <div className="text-right border-l-2 border-dashed border-orange-500/40 pl-3">
+                  <p className="text-xs text-muted-foreground font-medium mb-0.5">CODE</p>
+                  <p className="text-sm font-bold text-orange-600 dark:text-orange-500 tracking-wider">
+                    TRYSUBFLIX
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {couponApplied ? "✓ Applied" : "Tap to apply"}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 onClick={handleBuyNow}
                 className="flex-1 text-sm h-10 rounded-full bg-primary hover:bg-primary/90"
@@ -318,9 +320,9 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        <div className="space-y-3 mb-16 px-4 lg:px-0">
+        <div className="space-y-4 mb-16 px-3 lg:px-0">
           <div>
-            <h2 className="text-base font-bold mb-1.5">Product Description</h2>
+            <h2 className="text-base font-bold mb-3">Product Description</h2>
             <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-description">
               Save big with our {product.name} plans, affordable, reliable, and perfect for
               unlimited streaming of movies, shows, and originals every month.
@@ -330,8 +332,8 @@ export default function ProductDetails() {
           <Separator />
 
           <div>
-            <h2 className="text-base font-bold mb-1.5">Key Features</h2>
-            <ul className="space-y-1">
+            <h2 className="text-base font-bold mb-3">Key Features</h2>
+            <ul className="space-y-2">
               {features.map((feature, idx) => (
                 <li key={idx} className="flex gap-2 text-sm text-muted-foreground">
                   <span className="text-primary font-bold mt-0.5">•</span>
@@ -343,9 +345,9 @@ export default function ProductDetails() {
 
           <Separator />
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div>
-              <h3 className="text-sm font-bold mb-1">Q: Will the subscription be activated on my number or Gmail?</h3>
+              <h3 className="text-sm font-bold mb-2">Q: Will the subscription be activated on my number or Gmail?</h3>
               <p className="text-sm text-muted-foreground">
                 <span className="font-semibold">A:</span> No—the plan is shared. You'll receive unique login and sign in code to
                 login, not an activation on your personal email or phone.
@@ -353,7 +355,7 @@ export default function ProductDetails() {
             </div>
 
             <div>
-              <h3 className="text-sm font-bold mb-1">Q: How will I get my login credentials?</h3>
+              <h3 className="text-sm font-bold mb-2">Q: How will I get my login credentials?</h3>
               <p className="text-sm text-muted-foreground">
                 <span className="font-semibold">A:</span> Simply share your order ID with us on WhatsApp, and we'll send your
                 secure {product.name} details.
