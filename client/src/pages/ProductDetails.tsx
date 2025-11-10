@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShoppingCart, ArrowLeft, Tag } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Tag, Share2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -135,6 +135,34 @@ export default function ProductDetails() {
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: product.name,
+      text: `Check out ${product.name} subscription plans at SubFlix!`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link Copied!",
+          description: "Product link copied to clipboard",
+        });
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        toast({
+          title: "Failed to share",
+          description: "Please try again",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const handleBuyNow = () => {
     if (!selectedPlan || !selectedPlan.inStock) {
       toast({
@@ -192,7 +220,14 @@ export default function ProductDetails() {
         </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 lg:auto-rows-fr">
-          <div className="bg-white dark:bg-card rounded-md p-4 flex items-center justify-center border">
+          <div className="bg-white dark:bg-card rounded-md p-4 flex items-center justify-center border relative">
+            <button
+              onClick={handleShare}
+              className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover-elevate active-elevate-2"
+              data-testid="button-share"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
             <img
               src={product.image}
               alt={product.name}
