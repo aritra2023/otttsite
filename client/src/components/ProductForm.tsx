@@ -68,11 +68,29 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       opt => opt.actualPrice > 0 && opt.sellingPrice > 0
     );
     setCustomOptions(filteredOptions);
-    setFaqs(product?.faqs || []);
     
     // Migrate old description to keyFeatures if keyFeatures doesn't exist
     const keyFeaturesValue = product.keyFeatures || product.description || "";
-    const productDescValue = product.productDescription || "";
+    
+    // If productDescription is empty, use default description
+    const productDescValue = product.productDescription || 
+      `Save big with our ${product.name} plans, affordable, reliable, and perfect for unlimited streaming of movies, shows, and originals every month.`;
+    
+    // If no FAQs, use default questions
+    const defaultFaqs = product.faqs && product.faqs.length > 0 ? product.faqs : [
+      {
+        id: "default-1",
+        question: "Will the subscription be activated on my number or Gmail?",
+        answer: "No—the plan is shared. You'll receive unique login and sign in code to login, not an activation on your personal email or phone."
+      },
+      {
+        id: "default-2",
+        question: "How will I get my login credentials?",
+        answer: `Simply share your order ID with us on WhatsApp, and we'll send your secure ${product.name} details.`
+      }
+    ];
+    
+    setFaqs(defaultFaqs);
     
     form.reset({
       category: product.category || "Subscriptions",
