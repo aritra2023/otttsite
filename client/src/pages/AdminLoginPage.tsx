@@ -100,6 +100,16 @@ export default function AdminLoginPage() {
               >
                 {loginMutation.isPending ? "Logging in..." : "Login"}
               </Button>
+              <div className="text-center mt-2">
+                <Button
+                  variant="link"
+                  onClick={() => setLocation("/admin/forgot-password")}
+                  className="text-sm text-muted-foreground"
+                  data-testid="button-forgot-password"
+                >
+                  Forgot Password?
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>

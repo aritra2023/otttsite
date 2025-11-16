@@ -11,6 +11,7 @@ import FAQPage from "@/pages/FAQPage";
 import TermsPage from "@/pages/TermsPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import AdminDashboard from "@/pages/AdminDashboard";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ProductDetails from "@/pages/ProductDetails";
 import NotFound from "@/pages/not-found";
 
@@ -23,6 +24,8 @@ function Router() {
       <Route path="/faq" component={FAQPage} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/admin" component={AdminLoginPage} />
+      <Route path="/admin/login" component={AdminLoginPage} />
+      <Route path="/admin/forgot-password" component={ForgotPasswordPage} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
