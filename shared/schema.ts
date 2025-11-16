@@ -65,3 +65,17 @@ export const insertProductSchema = createInsertSchema(products).omit({
 
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
+
+export const passwordResetOtps = pgTable("password_reset_otps", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  otp: text("otp").notNull(),
+  expiresAt: integer("expires_at").notNull(),
+  verified: boolean("verified").notNull().default(false),
+});
+
+export const insertPasswordResetOtpSchema = createInsertSchema(passwordResetOtps).omit({
+  id: true,
+});
+
+export type InsertPasswordResetOtp = z.infer<typeof insertPasswordResetOtpSchema>;
+export type PasswordResetOtp = typeof passwordResetOtps.$inferSelect;

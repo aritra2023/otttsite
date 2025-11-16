@@ -1,10 +1,11 @@
-import { type User, type InsertUser, type Product, type InsertProduct, type CustomPricingOption } from "@shared/schema";
+import { type User, type InsertUser, type Product, type InsertProduct, type CustomPricingOption, type PasswordResetOtp, type InsertPasswordResetOtp } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserPassword(id: string, password: string): Promise<boolean>;
   
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
@@ -12,15 +13,22 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: string): Promise<boolean>;
+  
+  createPasswordResetOtp(otp: InsertPasswordResetOtp): Promise<PasswordResetOtp>;
+  getPasswordResetOtp(id: string): Promise<PasswordResetOtp | undefined>;
+  verifyPasswordResetOtp(id: string): Promise<boolean>;
+  cleanupExpiredOtps(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private products: Map<string, Product>;
+  private otps: Map<string, PasswordResetOtp>;
 
   constructor() {
     this.users = new Map();
     this.products = new Map();
+    this.otps = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -38,6 +46,13 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUserPassword(id: string, password: string): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user) return false;
+    this.users.set(id, { ...user, password });
+    return true;
   }
 
   async getProducts(): Promise<Product[]> {
@@ -85,6 +100,33 @@ export class MemStorage implements IStorage {
 
   async deleteProduct(id: string): Promise<boolean> {
     return this.products.delete(id);
+  }
+
+  async createPasswordResetOtp(insertOtp: InsertPasswordResetOtp): Promise<PasswordResetOtp> {
+    const id = randomUUID();
+    const otp: PasswordResetOtp = { ...insertOtp, id };
+    this.otps.set(id, otp);
+    return otp;
+  }
+
+  async getPasswordResetOtp(id: string): Promise<PasswordResetOtp | undefined> {
+    return this.otps.get(id);
+  }
+
+  async verifyPasswordResetOtp(id: string): Promise<boolean> {
+    const otp = this.otps.get(id);
+    if (!otp) return false;
+    this.otps.set(id, { ...otp, verified: true });
+    return true;
+  }
+
+  async cleanupExpiredOtps(): Promise<void> {
+    const now = Date.now();
+    Array.from(this.otps.entries()).forEach(([id, otp]) => {
+      if (otp.expiresAt < now) {
+        this.otps.delete(id);
+      }
+    });
   }
 }
 
