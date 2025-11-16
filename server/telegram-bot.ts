@@ -48,7 +48,7 @@ export function initTelegramBot(token: string) {
     const chatId = msg.chat.id;
     bot.sendMessage(
       chatId,
-      "Welcome to SubFlix Product Manager! 🎬\n\nCommands:\n/newpost - Add a new product\n/showall - View all products with numbers\n/delpost - Delete a product\n/changeimg - Change product image\n/changedescription - Change product description\n/addoptions - Add options to existing product\n/deloptions - Delete options from product"
+      `Welcome to SubFlix Product Manager! 🎬\n\n📱 Your Chat ID: ${chatId}\n\nCommands:\n/newpost - Add a new product\n/showall - View all products with numbers\n/delpost - Delete a product\n/changeimg - Change product image\n/changedescription - Change product description\n/addoptions - Add options to existing product\n/deloptions - Delete options from product\n\n💡 To enable password reset via OTP, set TELEGRAM_ADMIN_CHAT_ID to ${chatId} in your environment secrets.`
     );
   });
 
@@ -1405,13 +1405,14 @@ export async function sendOtpToTelegram(otp: string) {
 
   const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
   if (!adminChatId) {
-    throw new Error("TELEGRAM_ADMIN_CHAT_ID not set");
+    throw new Error("TELEGRAM_ADMIN_CHAT_ID not set. Please send /start to the bot to get your chat ID and set it in environment secrets.");
   }
 
   try {
     await botInstance.sendMessage(
       adminChatId,
-      `🔐 Password Reset OTP\n\nYour OTP code is: ${otp}\n\nThis code will expire in 10 minutes.\nDo not share this code with anyone.`
+      `🔐 Password Reset OTP\n\nYour OTP code is: *${otp}*\n\nThis code will expire in 10 minutes.\nDo not share this code with anyone.`,
+      { parse_mode: "Markdown" }
     );
   } catch (error) {
     console.error("Error sending OTP to Telegram:", error);
