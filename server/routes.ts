@@ -76,6 +76,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ isAdmin: !!req.session.isAdmin });
   });
 
+  app.post("/api/admin/forgot-password", async (req, res) => {
+    try {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = Date.now() + 10 * 60 * 1000;
+      
+      const otpRecord = await storage.createPasswordResetOtp({
+        otp,
+        expiresAt,
+        verified: false,
+      });
+      
+      const { sendOtpToTelegram } = await import("./telegram-bot");
+      await sendOtpToTelegram(otp);
+      
+      res.json({ otpId: otpRecord.id });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to send OTP" });
+    }
+  });
+
+  app.post("/api/admin/verify-otp", async (req, res) => {
+    try {
+      const { otpId, otp } = req.body;
+      if (!otpId || !otp) {
+        return res.status(400).json({ error: "OTP ID and OTP required" });
+      }
+
+      const otpRecord = await storage.getPasswordResetOtp(otpId);
+      if (!otpRecord) {
+        return res.status(404).json({ error: "OTP not found" });
+      }
+
+      if (otpRecord.expiresAt < Date.now()) {
+        return res.status(400).json({ error: "OTP expired" });
+      }
+
+      if (otpRecord.otp !== otp) {
+        return res.status(400).json({ error: "Invalid OTP" });
+      }
+
+      await storage.verifyPasswordResetOtp(otpId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to verify OTP" });
+    }
+  });
+
+  app.post("/api/admin/reset-password", async (req, res) => {
+    try {
+      const { otpId, password } = req.body;
+      if (!otpId || !password) {
+        return res.status(400).json({ error: "OTP ID and password required" });
+      }
+
+      const otpRecord = await storage.getPasswordResetOtp(otpId);
+      if (!otpRecord || !otpRecord.verified) {
+        return res.status(400).json({ error: "OTP not verified" });
+      }
+
+      if (otpRecord.expiresAt < Date.now()) {
+        return res.status(400).json({ error: "OTP expired" });
+      }
+
+      const passwordHash = await bcrypt.hash(password, 10);
+      process.env.ADMIN_PASSWORD_HASH = passwordHash;
+      
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reset password" });
+    }
+  });
+
   app.get("/api/products", async (req, res) => {
     try {
       const category = req.query.category as string | undefined;

@@ -12,6 +12,8 @@ interface UserSession {
 
 const sessions = new Map<number, UserSession>();
 
+let botInstance: TelegramBot | null = null;
+
 export function initTelegramBot(token: string) {
   const bot = new TelegramBot(token, { 
     polling: {
@@ -22,6 +24,8 @@ export function initTelegramBot(token: string) {
       }
     }
   });
+
+  botInstance = bot;
 
   bot.on('polling_error', (error: any) => {
     if (error.code === 'ETELEGRAM' && error.message.includes('409')) {
@@ -1392,4 +1396,25 @@ Product ID: ${product.id}
 
   console.log("Telegram bot initialized successfully!");
   return bot;
+}
+
+export async function sendOtpToTelegram(otp: string) {
+  if (!botInstance) {
+    throw new Error("Telegram bot not initialized");
+  }
+
+  const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+  if (!adminChatId) {
+    throw new Error("TELEGRAM_ADMIN_CHAT_ID not set");
+  }
+
+  try {
+    await botInstance.sendMessage(
+      adminChatId,
+      `🔐 Password Reset OTP\n\nYour OTP code is: ${otp}\n\nThis code will expire in 10 minutes.\nDo not share this code with anyone.`
+    );
+  } catch (error) {
+    console.error("Error sending OTP to Telegram:", error);
+    throw error;
+  }
 }
