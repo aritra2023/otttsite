@@ -36,7 +36,19 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+async function ensureAdminUser(): Promise<void> {
+  const adminUser = await storage.getUserByUsername("admin");
+  if (!adminUser) {
+    await storage.createUser({
+      username: "admin",
+      password: ADMIN_PASSWORD_HASH,
+    });
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  await ensureAdminUser();
   
   app.post("/api/admin/login", async (req, res) => {
     try {
@@ -45,7 +57,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Password required" });
       }
       
-      const isValid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+      const adminUser = await storage.getUserByUsername("admin");
+      if (!adminUser) {
+        return res.status(500).json({ error: "Admin user not found" });
+      }
+      
+      const isValid = await bcrypt.compare(password, adminUser.password);
       if (!isValid) {
         return res.status(401).json({ error: "Invalid password" });
       }
@@ -139,8 +156,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "OTP expired" });
       }
 
+      const adminUser = await storage.getUserByUsername("admin");
+      if (!adminUser) {
+        return res.status(500).json({ error: "Admin user not found" });
+      }
+
       const passwordHash = await bcrypt.hash(password, 10);
-      process.env.ADMIN_PASSWORD_HASH = passwordHash;
+      const updated = await storage.updateUserPassword(adminUser.id, passwordHash);
+      
+      if (!updated) {
+        return res.status(500).json({ error: "Failed to update password" });
+      }
       
       res.json({ success: true });
     } catch (error) {
