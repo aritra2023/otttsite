@@ -13,7 +13,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogPortal, DialogOverlay, DialogDescription } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useCart } from "@/context/CartContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -273,7 +273,11 @@ export default function Navbar({ onSearch }: NavbarProps) {
 <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogPortal>
           <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-          <DialogPrimitive.Content className="fixed left-0 right-0 top-0 bottom-0 z-50 w-full data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top duration-200">
+          <DialogPrimitive.Content className="fixed left-0 right-0 top-0 bottom-0 z-50 w-full data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top duration-200" aria-describedby="search-description">
+            <DialogTitle className="sr-only">Search Products</DialogTitle>
+            <DialogDescription id="search-description" className="sr-only">
+              Search for streaming platforms and subscription services
+            </DialogDescription>
             <div className="bg-background/95 backdrop-blur-xl shadow-2xl border-b border-border/50 overflow-hidden max-w-2xl mx-auto h-full">
               <div className="p-6">
                 <div className="relative flex items-center gap-3 bg-muted/30 rounded-full px-5 py-3 border border-border/50 focus-within:border-primary transition-all">
